@@ -17,7 +17,8 @@ repositories {
 }
 
 dependencies {
-    implementation("net.dv8tion:JDA:${jdaVersion}")
+//    implementation("net.dv8tion:JDA:${jdaVersion}")
+    implementation("com.github.DV8FromTheWorld:JDA:feature~slash-commands-SNAPSHOT")
     implementation("com.github.minndevelopment:jda-ktx:${ktxVersion}")
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
     implementation("org.apache.logging.log4j:log4j-core:2.11.2")
