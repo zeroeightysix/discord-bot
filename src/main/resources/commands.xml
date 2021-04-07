@@ -1,5 +1,13 @@
 <commands>
-    <command name="test" comment="Repeat some text">
-        <arg name="to_parrot" type="string" comment="The text to parrot" required="true"/>
+    <command name="parrot" comment="Repeat some text">
+        <command name="once" comment="Repeat some text once">
+            <arg name="to_parrot" type="string" comment="The text to parrot" required="true"/>
+        </command>
+
+        <command name="double" comment="Repeat some text, but twice">
+            <command name="overload" comment="wow">
+                <arg name="to_parrot" type="string" comment="The text to parrot twice" required="true"/>
+            </command>
+        </command>
     </command>
 </commands>
