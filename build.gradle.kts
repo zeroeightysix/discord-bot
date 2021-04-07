@@ -20,10 +20,16 @@ dependencies {
 //    implementation("net.dv8tion:JDA:${jdaVersion}")
     implementation("com.github.DV8FromTheWorld:JDA:feature~slash-commands-SNAPSHOT")
     implementation("com.github.minndevelopment:jda-ktx:${ktxVersion}")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.32")
+    // Logging
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
     implementation("org.apache.logging.log4j:log4j-core:2.11.2")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.11.2")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.32")
+    // Database stuff
+    implementation("org.jetbrains.exposed:exposed-core:0.30.1")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.30.1")
+    implementation("org.jetbrains.exposed:exposed-dao:0.30.1")
+    implementation("mysql:mysql-connector-java:5.1.48")
 
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
