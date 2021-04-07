@@ -10,4 +10,8 @@
             </command>
         </command>
     </command>
+
+    <command name="ping" comment="Get bot latency">
+        <arg name="ephemeral" type="boolean" required="false" comment="Whether or not the reply is ephemeral"/>
+    </command>
 </commands>
