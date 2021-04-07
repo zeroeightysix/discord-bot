@@ -1,0 +1,5 @@
+<commands>
+    <command name="test">
+        <arg name="to_parrot" type="string"/>
+    </command>
+</commands>
