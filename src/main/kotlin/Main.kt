@@ -16,13 +16,7 @@ private val logger = KotlinLogging.logger {}
 
 suspend fun main() {
     // Load commands
-    logger.info { "Loading commands" }
-    val (executor, commands) = (object {}).javaClass.getResourceAsStream("/commands.xml").use { stream ->
-        val handler = XMLCommandLoader.load(stream)
-        logger.info { "Loaded ${handler.commandCount} commands" }
-
-        handler.createExecutor<SlashCommandContext>("command") to handler.buildCommands()
-    }
+    logger.info { "Starting up" }
 
     val token = System.getenv(TOKEN_VAR_NAME) ?: return logger.error {
         "Failed to start bot. DISCORD_TOKEN environment variable is not configured!"
@@ -32,6 +26,13 @@ suspend fun main() {
         "Failed to start bot. GUILD_ID environment variable is not configured!"
     }
 
+    val (executor, commands) = (object {}).javaClass.getResourceAsStream("/commands.xml").use { stream ->
+        val handler = XMLCommandLoader.load(stream)
+        logger.info { "Loaded ${handler.commandCount} commands" }
+
+        handler.createExecutor<SlashCommandContext>("command") to handler.buildCommands()
+    }
+
     val jda = JDABuilder.createLight(token, EnumSet.noneOf(GatewayIntent::class.java))
         .injectKTX()
         .build()
@@ -39,7 +40,6 @@ suspend fun main() {
     jda.listener<ReadyEvent> {
         jda.getGuildById(testingGuildId.toLong())!!.updateCommands().run {
             addCommands(commands)
-
             await()
         }
     }

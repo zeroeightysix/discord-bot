@@ -24,6 +24,8 @@ enum class CommandFailure {
 interface CommandOptions {
     
     val name: String
+    val subName: String?
+    val subGroupName: String?
     
     fun getOption(name: String, desiredType: KClass<out Any>): Any?
     
@@ -31,6 +33,8 @@ interface CommandOptions {
 
 class SlashCommandContext(val event: SlashCommandEvent) : CommandOptions {
     override val name: String = event.name
+    override val subGroupName: String? = event.subcommandGroup
+    override val subName: String? = event.subcommandName
 
     override fun getOption(name: String, desiredType: KClass<out Any>): Any? {
         val option = event.getOption(name) ?: return null

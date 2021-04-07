@@ -140,6 +140,51 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
             clazz: KClass<*>,
             contextClazz: KClass<T>
         ): CommandExecutor<T, CommandFailure> {
+            return if (subCommands.isNotEmpty()) {
+                createSubcommandsExecutor(clazz, contextClazz)
+            } else {
+                createArgumentedExecutor(clazz, contextClazz, instance)
+            }
+        }
+
+        private fun <T : CommandOptions> createSubcommandsExecutor(
+            clazz: KClass<*>,
+            contextClazz: KClass<T>
+        ): CommandExecutor<T, CommandFailure> {
+            val commandMap = subCommands.map {
+                val name = it.name
+                val inner = clazz.nestedClasses.find { nested ->
+                    nested.simpleName?.toLowerCase() == name.toLowerCase().replace("_", "")
+                }
+                    ?: throw RuntimeException("Subcommand '$name' has no related inner class in $clazz")
+                // Get the instance, fail if clazz is not an `object`
+                val instance = inner.objectInstance
+                    ?: throw RuntimeException("${clazz.qualifiedName} is not an object declaration")
+
+                it to it.createExecutor(instance, inner, contextClazz)
+            }.toMap()
+
+            return object : CommandExecutor<T, CommandFailure> {
+                override suspend fun execute(context: T): Result<CommandFailure> {
+                    for ((command, executor) in commandMap.entries) {
+                        val name = (if (command.subCommands.isNotEmpty()) context.subGroupName else context.subName)
+                            ?: throw RuntimeException("Subcommand executor on context that is not a subcommand (group)")
+                        if (command.name == name) {
+                            executor.execute(context)
+                            return Result.success()
+                        }
+                    }
+                    
+                    return Result.failure(CommandFailure.DOES_NOT_EXIST)
+                }
+            }
+        }
+
+        private fun <T : CommandOptions> createArgumentedExecutor(
+            clazz: KClass<*>,
+            contextClazz: KClass<T>,
+            instance: Any
+        ): CommandExecutor<T, CommandFailure> {
             val executeFun = clazz.members.find { it.name == "execute" }
                 ?: throw RuntimeException("${clazz.qualifiedName} has no `execute` function")
             if (!executeFun.isSuspend) throw RuntimeException("'$executeFun' must be suspend")
