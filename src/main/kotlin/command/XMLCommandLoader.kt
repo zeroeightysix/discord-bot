@@ -57,6 +57,11 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
         when (qName) {
             "command" -> {
                 val finishedCommand = commandStack.pop()
+                
+                // Sanity check: subcommands and arguments do not mix
+                if (finishedCommand.arguments.isNotEmpty() && finishedCommand.subCommands.isNotEmpty())
+                    throw SAXException("Command '${finishedCommand.name}' may not have both subcommands and arguments")
+                
                 commandStack.peek().subCommands += finishedCommand
             }
         }
