@@ -23,7 +23,7 @@ import kotlin.reflect.jvm.jvmErasure
 class XMLCommandLoader private constructor() : DefaultHandler() {
 
     val commandCount: Int
-        get() = commandStack.size
+        get() = commandStack.peek().subCommands.size
 
     private val commandStack = Stack<XMLCommand>().also {
         it.push(XMLCommand("", ""))
