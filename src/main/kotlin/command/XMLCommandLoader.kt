@@ -173,7 +173,10 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                 } else {
                     val arg = arguments.getOrElse(idx - 1) {
                         throw RuntimeException("'$executeFun' has more parameters than the command! Current signature: ($gottenSignature), wanted: ($wantedSignature).")
-                    };
+                    }
+
+                    // If `arg` is optional, the parameter must be nullable!
+                    if (!arg.required && !par.type.isMarkedNullable) throw RuntimeException("$par is linked to the optional argument `${arg.name}`, thus, it must be nullable, but it is not.");
 
                     { ctx: T -> ctx.getOption(arg.name, par.type.jvmErasure) }
                 }
