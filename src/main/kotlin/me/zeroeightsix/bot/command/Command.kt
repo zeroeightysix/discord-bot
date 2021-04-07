@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.entities.Command.OptionType.ROLE
 import net.dv8tion.jda.api.entities.Command.OptionType.STRING
 import net.dv8tion.jda.api.entities.Command.OptionType.UNKNOWN
 import net.dv8tion.jda.api.entities.Command.OptionType.USER
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import kotlin.reflect.KClass
 
@@ -59,3 +61,12 @@ class Result<out F> private constructor(val failure: F?) {
     
     fun isFailure() = this.failure != null
 }
+
+fun SlashCommandEvent.reply(content: String, ephemeral: Boolean) =
+    this.reply(content).setEphemeral(ephemeral)
+
+fun SlashCommandEvent.reply(content: MessageEmbed, ephemeral: Boolean) =
+    this.reply(content).setEphemeral(ephemeral)
+
+fun SlashCommandEvent.reply(content: Message, ephemeral: Boolean) =
+    this.reply(content).setEphemeral(ephemeral)
