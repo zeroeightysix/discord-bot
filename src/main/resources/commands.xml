@@ -1,17 +1,3 @@
 <commands>
-    <command name="parrot" comment="Repeat some text">
-        <command name="once" comment="Repeat some text once">
-            <arg name="to_parrot" type="string" comment="The text to parrot" required="true"/>
-        </command>
-
-        <command name="double" comment="Repeat some text, but twice">
-            <command name="overload" comment="wow">
-                <arg name="to_parrot" type="string" comment="The text to parrot twice" required="true"/>
-            </command>
-        </command>
-    </command>
-
-    <command name="ping" comment="Get bot latency">
-        <arg name="ephemeral" type="boolean" required="false" comment="Whether or not the reply is ephemeral"/>
-    </command>
+    <command name="count" comment="Do, well, counting."/>
 </commands>
