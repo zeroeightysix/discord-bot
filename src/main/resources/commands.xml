@@ -1,5 +1,5 @@
 <commands>
-    <command name="test">
-        <arg name="to_parrot" type="string"/>
+    <command name="test" comment="Repeat some text">
+        <arg name="to_parrot" type="string" comment="The text to parrot" required="true"/>
     </command>
 </commands>

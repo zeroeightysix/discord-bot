@@ -26,7 +26,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
         get() = commandStack.size
 
     private val commandStack = Stack<XMLCommand>().also {
-        it.push(XMLCommand("", null))
+        it.push(XMLCommand("", ""))
     }
 
     override fun startElement(uri: String, localName: String, qName: String, attributes: Attributes) {
@@ -36,7 +36,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
         when (qName) {
             "command" -> {
                 val name = attributes.getValue("name") ?: throw missing("command", "name")
-                val comment = attributes.getValue("comment")
+                val comment = attributes.getValue("comment") ?: throw missing("arg", "comment")
                 val command = XMLCommand(name, comment)
 
                 commandStack.push(command)
@@ -44,7 +44,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
             "arg" -> {
                 val name = attributes.getValue("name") ?: throw missing("arg", "name")
                 val type = attributes.getValue("type") ?: throw missing("arg", "type")
-                val comment = attributes.getValue("comment")
+                val comment = attributes.getValue("comment") ?: throw missing("arg", "comment")
                 val required = attributes.getValue("required").toBoolean()
                 val command = commandStack.peek()
 
@@ -124,7 +124,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
 
     private data class XMLCommand(
         val name: String,
-        val comment: String?,
+        val comment: String,
         val arguments: MutableList<XMLArg> = mutableListOf(),
         val subCommands: MutableList<XMLCommand> = mutableListOf()
     ) {
@@ -191,18 +191,18 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
         }
 
         fun createCommandData(): CommandUpdateAction.CommandData {
-            val data = CommandUpdateAction.CommandData(name, comment ?: "No description")
+            val data = CommandUpdateAction.CommandData(name, comment)
             arguments.forEach {
                 data.addOption(
-                    CommandUpdateAction.OptionData(it.type, it.name, it.comment ?: "No description")
+                    CommandUpdateAction.OptionData(it.type, it.name, it.comment)
                         .setRequired(it.required)
                 )
             }
             subCommands.forEach {
-                val subData = CommandUpdateAction.SubcommandData(it.name, it.comment ?: "No description")
+                val subData = CommandUpdateAction.SubcommandData(it.name, it.comment)
                 it.arguments.forEach { arg ->
                     subData.addOption(
-                        CommandUpdateAction.OptionData(arg.type, arg.name, arg.comment ?: "No description")
+                        CommandUpdateAction.OptionData(arg.type, arg.name, arg.comment)
                             .setRequired(arg.required)
                     )
                 }
@@ -212,7 +212,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
         }
     }
 
-    private data class XMLArg(val name: String, val type: OptionType, val comment: String?, val required: Boolean)
+    private data class XMLArg(val name: String, val type: OptionType, val comment: String, val required: Boolean)
 
 }
 
