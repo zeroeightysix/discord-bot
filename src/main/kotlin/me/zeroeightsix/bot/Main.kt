@@ -1,8 +1,8 @@
-import command.SlashCommandContext
-import command.XMLCommandLoader
 import dev.minn.jda.ktx.await
 import dev.minn.jda.ktx.injectKTX
 import dev.minn.jda.ktx.listener
+import me.zeroeightsix.bot.command.SlashCommandContext
+import me.zeroeightsix.bot.command.XMLCommandLoader
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.ReadyEvent
@@ -30,7 +30,7 @@ suspend fun main() {
         val handler = XMLCommandLoader.load(stream)
         logger.info { "Loaded ${handler.commandCount} commands" }
 
-        handler.createExecutor<SlashCommandContext>("command") to handler.buildCommands()
+        handler.createExecutor<SlashCommandContext>("me.zeroeightsix.bot.command") to handler.buildCommands()
     }
 
     val jda = JDABuilder.createLight(token, EnumSet.noneOf(GatewayIntent::class.java))
@@ -46,7 +46,7 @@ suspend fun main() {
 
     jda.listener<SlashCommandEvent> { event ->
         executor.execute(SlashCommandContext(event)).failure?.let {
-            logger.error { "Failed to execute command: $it (event: $event)" }
+            logger.error { "Failed to execute me.zeroeightsix.bot.command: $it (event: $event)" }
 
             // No reply to discord: this way the user gets a pretty error message from discord itself.
         }

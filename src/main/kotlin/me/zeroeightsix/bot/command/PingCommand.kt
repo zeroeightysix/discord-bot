@@ -1,4 +1,6 @@
-package command
+@file:Suppress("unused")
+
+package me.zeroeightsix.bot.command
 
 import dev.minn.jda.ktx.await
 

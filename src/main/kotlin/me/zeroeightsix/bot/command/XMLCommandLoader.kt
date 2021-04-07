@@ -1,4 +1,4 @@
-package command
+package me.zeroeightsix.bot.command
 
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Command.OptionType
@@ -57,11 +57,11 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
         when (qName) {
             "command" -> {
                 val finishedCommand = commandStack.pop()
-                
+
                 // Sanity check: subcommands and arguments do not mix
                 if (finishedCommand.arguments.isNotEmpty() && finishedCommand.subCommands.isNotEmpty())
                     throw SAXException("Command '${finishedCommand.name}' may not have both subcommands and arguments")
-                
+
                 commandStack.peek().subCommands += finishedCommand
             }
         }
@@ -94,7 +94,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                 }
             }.filterNotNull().firstOrNull()?.kotlin
                 ?: throw RuntimeException(
-                    "Could not find implementation class for command '$name'. " +
+                    "Could not find implementation class for me.zeroeightsix.bot.command '$name'. " +
                             "Tried ${toTry.joinToString(" and ") { "'$it'" }}."
                 )
 
@@ -174,7 +174,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                             return Result.success()
                         }
                     }
-                    
+
                     return Result.failure(CommandFailure.DOES_NOT_EXIST)
                 }
             }
@@ -213,7 +213,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                 logger.warn { "'$executeFun' has too little arguments, but we can still proceed. Current signature: ($gottenSignature), wanted: ($wantedSignature)." }
             }
 
-            // Now, we match every value parameter to the command argument.
+            // Now, we match every value parameter to the me.zeroeightsix.bot.command argument.
             val values = valueParameters.mapIndexed { idx, par ->
                 // The first parameter should always be the context
                 par to if (idx == 0) {
@@ -222,7 +222,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                     } else throw RuntimeException("'$executeFun': first argument must be of type '${contextClazz.qualifiedName}'")
                 } else {
                     val arg = arguments.getOrElse(idx - 1) {
-                        throw RuntimeException("'$executeFun' has more parameters than the command! Current signature: ($gottenSignature), wanted: ($wantedSignature).")
+                        throw RuntimeException("'$executeFun' has more parameters than the me.zeroeightsix.bot.command! Current signature: ($gottenSignature), wanted: ($wantedSignature).")
                     }
 
                     // If `arg` is optional, the parameter must be nullable!
@@ -255,16 +255,24 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                         val groupData = CommandUpdateAction.SubcommandGroupData(subCommand.name, subCommand.comment)
                         subCommand.subCommands.forEach { subSubCommand ->
                             // subcommands in a group can not be groups
-                            groupData.addSubcommand(CommandUpdateAction.SubcommandData(subSubCommand.name, subSubCommand.comment).also { ssData ->
-                                createOptions(subSubCommand.arguments).forEach { ssData.addOption(it) }
-                            })
+                            groupData.addSubcommand(
+                                CommandUpdateAction.SubcommandData(
+                                    subSubCommand.name,
+                                    subSubCommand.comment
+                                ).also { ssData ->
+                                    createOptions(subSubCommand.arguments).forEach { ssData.addOption(it) }
+                                })
                         }
                         rootCommandData.addSubcommandGroup(groupData)
                     } else {
                         // `subCommand` is not a subcommand group
-                        rootCommandData.addSubcommand(CommandUpdateAction.SubcommandData(subCommand.name, subCommand.comment).also { sData ->
-                            createOptions(subCommand.arguments).forEach { sData.addOption(it) }
-                        })
+                        rootCommandData.addSubcommand(
+                            CommandUpdateAction.SubcommandData(
+                                subCommand.name,
+                                subCommand.comment
+                            ).also { sData ->
+                                createOptions(subCommand.arguments).forEach { sData.addOption(it) }
+                            })
                     }
                 }
             } else {

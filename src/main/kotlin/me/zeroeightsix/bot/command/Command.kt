@@ -1,4 +1,4 @@
-package command
+package me.zeroeightsix.bot.command
 
 import net.dv8tion.jda.api.entities.Command.OptionType.BOOLEAN
 import net.dv8tion.jda.api.entities.Command.OptionType.CHANNEL
