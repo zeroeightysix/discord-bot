@@ -199,24 +199,34 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
         }
 
         fun createCommandData(): CommandUpdateAction.CommandData {
-            val data = CommandUpdateAction.CommandData(name, comment)
-            arguments.forEach {
-                data.addOption(
-                    CommandUpdateAction.OptionData(it.type, it.name, it.comment)
-                        .setRequired(it.required)
-                )
-            }
-            subCommands.forEach {
-                val subData = CommandUpdateAction.SubcommandData(it.name, it.comment)
-                it.arguments.forEach { arg ->
-                    subData.addOption(
-                        CommandUpdateAction.OptionData(arg.type, arg.name, arg.comment)
-                            .setRequired(arg.required)
-                    )
+            fun createOptions(arguments: MutableList<XMLArg>) =
+                arguments.map { CommandUpdateAction.OptionData(it.type, it.name, it.comment).setRequired(it.required) }
+
+            val rootCommandData = CommandUpdateAction.CommandData(name, comment)
+            if (subCommands.isNotEmpty()) {
+                subCommands.forEach { subCommand ->
+                    if (subCommand.subCommands.isNotEmpty()) {
+                        // `subCommand` is a subcommand group
+                        val groupData = CommandUpdateAction.SubcommandGroupData(subCommand.name, subCommand.comment)
+                        subCommand.subCommands.forEach { subSubCommand ->
+                            // subcommands in a group can not be groups
+                            groupData.addSubcommand(CommandUpdateAction.SubcommandData(subSubCommand.name, subSubCommand.comment).also { ssData ->
+                                createOptions(subSubCommand.arguments).forEach { ssData.addOption(it) }
+                            })
+                        }
+                        rootCommandData.addSubcommandGroup(groupData)
+                    } else {
+                        // `subCommand` is not a subcommand group
+                        rootCommandData.addSubcommand(CommandUpdateAction.SubcommandData(subCommand.name, subCommand.comment).also { sData ->
+                            createOptions(subCommand.arguments).forEach { sData.addOption(it) }
+                        })
+                    }
                 }
-                data.addSubcommand(subData)
+            } else {
+                createOptions(arguments).forEach { rootCommandData.addOption(it) }
             }
-            return data
+
+            return rootCommandData
         }
     }
 
