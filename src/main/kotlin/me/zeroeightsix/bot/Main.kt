@@ -1,7 +1,7 @@
 import dev.minn.jda.ktx.await
 import dev.minn.jda.ktx.injectKTX
 import dev.minn.jda.ktx.listener
-import me.zeroeightsix.bot.command.SlashCommandContext
+import me.zeroeightsix.bot.command.CommandContext
 import me.zeroeightsix.bot.command.XMLCommandLoader
 import me.zeroeightsix.bot.storage.Usage
 import mu.KotlinLogging
@@ -40,7 +40,7 @@ suspend fun main() {
         val handler = XMLCommandLoader.load(stream)
         logger.info { "Loaded ${handler.commandCount} commands" }
 
-        handler.createExecutor<SlashCommandContext>("me.zeroeightsix.bot.command") to handler.buildCommands()
+        handler.createExecutor<CommandContext>("me.zeroeightsix.bot.command") to handler.buildCommands()
     }
 
     // Connect to discord
@@ -56,7 +56,7 @@ suspend fun main() {
     }
 
     jda.listener<SlashCommandEvent> { event ->
-        executor.execute(SlashCommandContext(event, jda)).failure?.let {
+        executor.execute(CommandContext(event, jda)).failure?.let {
             logger.error { "Failed to execute command: $it (event: $event)" }
 
             // No reply to discord: this way the user gets a pretty error message from discord itself.

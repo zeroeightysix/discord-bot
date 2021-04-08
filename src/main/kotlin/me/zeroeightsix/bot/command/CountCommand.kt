@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object CountCommand {
 
-    suspend fun execute(ctx: SlashCommandContext) {
+    suspend fun execute(ctx: CommandContext) {
         val member = ctx.event.member ?: return
         val memberId = member.idLong
 

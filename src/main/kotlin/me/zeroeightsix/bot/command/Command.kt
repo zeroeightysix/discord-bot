@@ -34,7 +34,7 @@ interface CommandOptions {
     
 }
 
-class SlashCommandContext(val event: SlashCommandEvent, val jda: JDA) : CommandOptions {
+class CommandContext(val event: SlashCommandEvent, val jda: JDA) : CommandOptions {
     override val name: String = event.name
     override val subGroupName: String? = event.subcommandGroup
     override val subName: String? = event.subcommandName
