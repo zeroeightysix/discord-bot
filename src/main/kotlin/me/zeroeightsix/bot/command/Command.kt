@@ -1,6 +1,5 @@
 package me.zeroeightsix.bot.command
 
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Command.OptionType.BOOLEAN
 import net.dv8tion.jda.api.entities.Command.OptionType.CHANNEL
 import net.dv8tion.jda.api.entities.Command.OptionType.INTEGER
@@ -34,7 +33,7 @@ interface CommandOptions {
     
 }
 
-class CommandContext(val event: SlashCommandEvent, val jda: JDA) : CommandOptions {
+class CommandContext(val event: SlashCommandEvent) : CommandOptions {
     override val name: String = event.name
     override val subGroupName: String? = event.subcommandGroup
     override val subName: String? = event.subcommandName
