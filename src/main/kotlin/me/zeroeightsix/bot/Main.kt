@@ -5,6 +5,7 @@ import dev.minn.jda.ktx.injectKTX
 import dev.minn.jda.ktx.listener
 import me.zeroeightsix.bot.command.CommandContext
 import me.zeroeightsix.bot.command.XMLCommandLoader
+import me.zeroeightsix.bot.service.VoiceChatTracker
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
@@ -76,5 +77,5 @@ suspend fun main() {
 // I hate this function.
 // But I don't want to do it by reflection.
 private fun initMustInit() {
-//    VoiceChatTracker
+    VoiceChatTracker
 }
