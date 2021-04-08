@@ -57,7 +57,7 @@ suspend fun main() {
 
     jda.listener<SlashCommandEvent> { event ->
         executor.execute(SlashCommandContext(event)).failure?.let {
-            logger.error { "Failed to execute me.zeroeightsix.bot.command: $it (event: $event)" }
+            logger.error { "Failed to execute command: $it (event: $event)" }
 
             // No reply to discord: this way the user gets a pretty error message from discord itself.
         }

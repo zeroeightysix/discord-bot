@@ -94,7 +94,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                 }
             }.filterNotNull().firstOrNull()?.kotlin
                 ?: throw RuntimeException(
-                    "Could not find implementation class for me.zeroeightsix.bot.command '$name'. " +
+                    "Could not find implementation class for command '$name'. " +
                             "Tried ${toTry.joinToString(" and ") { "'$it'" }}."
                 )
 
@@ -213,7 +213,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                 logger.warn { "'$executeFun' has too little arguments, but we can still proceed. Current signature: ($gottenSignature), wanted: ($wantedSignature)." }
             }
 
-            // Now, we match every value parameter to the me.zeroeightsix.bot.command argument.
+            // Now, we match every value parameter to the command argument.
             val values = valueParameters.mapIndexed { idx, par ->
                 // The first parameter should always be the context
                 par to if (idx == 0) {
@@ -222,7 +222,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                     } else throw RuntimeException("'$executeFun': first argument must be of type '${contextClazz.qualifiedName}'")
                 } else {
                     val arg = arguments.getOrElse(idx - 1) {
-                        throw RuntimeException("'$executeFun' has more parameters than the me.zeroeightsix.bot.command! Current signature: ($gottenSignature), wanted: ($wantedSignature).")
+                        throw RuntimeException("'$executeFun' has more parameters than the command! Current signature: ($gottenSignature), wanted: ($wantedSignature).")
                     }
 
                     // If `arg` is optional, the parameter must be nullable!
