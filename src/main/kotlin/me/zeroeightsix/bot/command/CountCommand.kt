@@ -3,7 +3,7 @@
 package me.zeroeightsix.bot.command
 
 import dev.minn.jda.ktx.await
-import me.zeroeightsix.bot.database
+import me.zeroeightsix.bot.transaction
 import me.zeroeightsix.bot.storage.Usages
 import me.zeroeightsix.bot.storage.usages
 import org.ktorm.dsl.eq
@@ -17,7 +17,7 @@ object CountCommand {
         val member = ctx.event.member ?: return
         val memberId = member.idLong
 
-        val usage = database {
+        val usage = transaction {
             insertOrUpdate(Usages) {
                 set(it.memberId, memberId)
                 set(it.commandUsages, 1)
