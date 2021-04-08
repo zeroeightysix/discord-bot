@@ -1,18 +1,23 @@
 package me.zeroeightsix.bot.storage
 
-import org.jetbrains.exposed.dao.LongEntity
-import org.jetbrains.exposed.dao.LongEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.LongIdTable
+import org.ktorm.database.Database
+import org.ktorm.entity.Entity
+import org.ktorm.entity.sequenceOf
+import org.ktorm.schema.Table
+import org.ktorm.schema.int
+import org.ktorm.schema.long
 
-object Usage : LongIdTable(name = "usage", columnName = "user_id") {
-    
-    val commandUsages = integer("command_usages").default(0)
-    
+object Usages : Table<Usage>("usages") {
+    val memberId = long("member_id").primaryKey().bindTo { it.memberId }
+    val commandUsages = int("command_usages").bindTo { it.commandUsages }
 }
 
-class UsageEntry(userId: EntityID<Long>) : LongEntity(userId) {
-    companion object : LongEntityClass<UsageEntry>(Usage)
+interface Usage : Entity<Usage> {
+    companion object : Entity.Factory<Usage>()
 
-    var commandUsages by Usage.commandUsages
+    val memberId: Long
+    val commandUsages: Int
 }
+
+val Database.usages
+    get() = this.sequenceOf(Usages)

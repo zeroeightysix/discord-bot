@@ -1,18 +1,18 @@
+package me.zeroeightsix.bot
+
 import dev.minn.jda.ktx.await
 import dev.minn.jda.ktx.injectKTX
 import dev.minn.jda.ktx.listener
 import me.zeroeightsix.bot.command.CommandContext
 import me.zeroeightsix.bot.command.XMLCommandLoader
-import me.zeroeightsix.bot.storage.Usage
 import mu.KotlinLogging
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
-import net.dv8tion.jda.api.requests.GatewayIntent
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.*
+import net.dv8tion.jda.api.requests.GatewayIntent.GUILD_VOICE_STATES
+import net.dv8tion.jda.api.utils.MemberCachePolicy
+import net.dv8tion.jda.api.utils.cache.CacheFlag
 
 const val TOKEN_VAR_NAME = "DISCORD_TOKEN"
 const val GUILD_VAR_NAME = "GUILD_ID"
@@ -20,6 +20,11 @@ const val DB_USER_VAR_NAME = "DB_USER"
 const val DB_PASS_VAR_NAME = "DB_PASSWORD"
 
 private val logger = KotlinLogging.logger {}
+
+lateinit var jda: JDA
+    private set
+
+typealias MemberID = Long
 
 suspend fun main() {
     logger.info { "Starting up" }
@@ -30,7 +35,7 @@ suspend fun main() {
     val token = System.getenv(TOKEN_VAR_NAME) ?: return missingEnv(TOKEN_VAR_NAME)
     val testingGuildId = System.getenv(GUILD_VAR_NAME) ?: return missingEnv(GUILD_VAR_NAME)
 
-    initDatabase(
+    connectDatabase(
         System.getenv(DB_USER_VAR_NAME) ?: return missingEnv(DB_USER_VAR_NAME),
         System.getenv(DB_PASS_VAR_NAME) ?: return missingEnv(DB_PASS_VAR_NAME)
     )
@@ -44,7 +49,9 @@ suspend fun main() {
     }
 
     // Connect to discord
-    val jda = JDABuilder.createLight(token, EnumSet.noneOf(GatewayIntent::class.java))
+    jda = JDABuilder.createLight(token, GUILD_VOICE_STATES)
+        .enableCache(CacheFlag.VOICE_STATE)
+        .setMemberCachePolicy(MemberCachePolicy.VOICE)
         .injectKTX()
         .build()
 
@@ -62,15 +69,12 @@ suspend fun main() {
             // No reply to discord: this way the user gets a pretty error message from discord itself.
         }
     }
+
+    initMustInit()
 }
 
-private fun initDatabase(dbUser: String, dbPassword: String) {
-    Database.connect(
-        "jdbc:mysql://localhost:3306/test", driver = "com.mysql.jdbc.Driver",
-        user = dbUser, password = dbPassword
-    )
-
-    transaction {
-        SchemaUtils.create(Usage)
-    }
+// I hate this function.
+// But I don't want to do it by reflection.
+private fun initMustInit() {
+//    VoiceChatTracker
 }

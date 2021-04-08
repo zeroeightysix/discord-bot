@@ -9,6 +9,7 @@ version = "1.0-SNAPSHOT"
 
 val jdaVersion = "4.2.1_253"
 val ktxVersion = "1a45395155"
+val ktormVersion = "3.3.0"
 
 repositories {
     mavenCentral()
@@ -26,9 +27,8 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:2.11.2")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.11.2")
     // Database stuff
-    implementation("org.jetbrains.exposed:exposed-core:0.30.1")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.30.1")
-    implementation("org.jetbrains.exposed:exposed-dao:0.30.1")
+    implementation("org.ktorm:ktorm-core:$ktormVersion")
+    implementation("org.ktorm:ktorm-support-mysql:$ktormVersion")
     implementation("mysql:mysql-connector-java:5.1.48")
 
     testImplementation(kotlin("test-junit5"))
