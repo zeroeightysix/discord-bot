@@ -1,3 +1,9 @@
 <commands>
     <command name="count" comment="Do, well, counting."/>
+
+    <command name="voicestat" comment="Get statistics on voice chat activity">
+        <command name="me" comment="Voice stats about yourself">
+            <arg name="channel" comment="What channel to get statistics of" type="channel" required="false"/>
+        </command>
+    </command>
 </commands>

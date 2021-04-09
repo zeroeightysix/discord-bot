@@ -5,7 +5,7 @@ import dev.minn.jda.ktx.injectKTX
 import dev.minn.jda.ktx.listener
 import me.zeroeightsix.bot.command.CommandContext
 import me.zeroeightsix.bot.command.XMLCommandLoader
-import me.zeroeightsix.bot.service.VoiceChatTracker
+import me.zeroeightsix.bot.service.VoiceTracker
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
@@ -36,11 +36,6 @@ suspend fun main() {
     val token = System.getenv(TOKEN_VAR_NAME) ?: return missingEnv(TOKEN_VAR_NAME)
     val testingGuildId = System.getenv(GUILD_VAR_NAME) ?: return missingEnv(GUILD_VAR_NAME)
 
-    connectDatabase(
-        System.getenv(DB_USER_VAR_NAME) ?: return missingEnv(DB_USER_VAR_NAME),
-        System.getenv(DB_PASS_VAR_NAME) ?: return missingEnv(DB_PASS_VAR_NAME)
-    )
-
     // Load commands
     val (executor, commands) = (object {}).javaClass.getResourceAsStream("/commands.xml")!!.use { stream ->
         val handler = XMLCommandLoader.load(stream)
@@ -48,6 +43,11 @@ suspend fun main() {
 
         handler.createExecutor<CommandContext>("me.zeroeightsix.bot.command") to handler.buildCommands()
     }
+
+    connectDatabase(
+        System.getenv(DB_USER_VAR_NAME) ?: return missingEnv(DB_USER_VAR_NAME),
+        System.getenv(DB_PASS_VAR_NAME) ?: return missingEnv(DB_PASS_VAR_NAME)
+    )
 
     // Connect to discord
     jda = JDABuilder.createLight(token, GUILD_VOICE_STATES)
@@ -77,5 +77,5 @@ suspend fun main() {
 // I hate this function.
 // But I don't want to do it by reflection.
 private fun initMustInit() {
-    VoiceChatTracker
+    VoiceTracker
 }
