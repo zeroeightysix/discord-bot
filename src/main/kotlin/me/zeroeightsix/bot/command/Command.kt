@@ -45,7 +45,7 @@ class CommandContext(val event: SlashCommandEvent) : CommandOptions {
             INTEGER -> option.asLong.toInt()
             BOOLEAN -> option.asBoolean
             USER -> option.asUser
-            CHANNEL -> option.asChannel
+            CHANNEL -> option.asGuildChannel
             ROLE -> option.asRole
             else -> TODO()
         }

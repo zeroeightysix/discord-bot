@@ -18,7 +18,7 @@ object VoicestatCommand {
 
             val channel = channel?.let {
                 (it as? VoiceChannel) ?: run {
-                    ctx.event.reply("you are moronic")
+                    ctx.event.reply("You must supply a voice channel.", ephemeral = true).await()
                     return
                 }
             }
@@ -28,7 +28,7 @@ object VoicestatCommand {
                 else VoiceTracker.databaseGetTime(memberId, channel.idLong)).filterNotNull()
 
             if (times.isNotEmpty()) {
-                // TODO: Sending an embed results in an error?
+                // TODO: Embeds can not be ephemeral.
 //                ctx.event.reply(Embed {
 //                    title = "Voice channel times"
 //                    times.forEach {
@@ -38,10 +38,10 @@ object VoicestatCommand {
 //                            value = "${(it.timeSpent / 1000)}s"
 //                        }
 //                    }
-//                }, ephemeral = true)
+//                })
 
                 ctx.event.reply(times.joinToString("\n") {
-                    val channelName = jda.getGuildChannelById(it.channelId)?.name ?: "Unknown channel"
+                    val channelName = jda.getVoiceChannelById(it.channelId)?.name ?: "Unknown channel"
                     "$channelName: ${Duration.ofMillis(it.timeSpent).humanReadable}"
                 })
             } else {
