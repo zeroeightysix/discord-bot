@@ -1,7 +1,9 @@
 package me.zeroeightsix.bot.command
 
+import dev.minn.jda.ktx.await
 import me.zeroeightsix.bot.BUNDLE
 import me.zeroeightsix.bot.locale
+import net.dv8tion.jda.api.entities.AbstractChannel
 import net.dv8tion.jda.api.entities.Command.OptionType.BOOLEAN
 import net.dv8tion.jda.api.entities.Command.OptionType.CHANNEL
 import net.dv8tion.jda.api.entities.Command.OptionType.INTEGER
@@ -11,6 +13,7 @@ import net.dv8tion.jda.api.entities.Command.OptionType.UNKNOWN
 import net.dv8tion.jda.api.entities.Command.OptionType.USER
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import org.jetbrains.annotations.PropertyKey
 import java.util.*
@@ -66,6 +69,40 @@ class CommandContext(val event: SlashCommandEvent) : CommandOptions, L10n {
             ROLE -> option.asRole
             else -> TODO()
         }
+    }
+
+    suspend fun <T> reply(message: String, ret: T): T {
+        event.reply(message).await()
+        return ret
+    }
+
+    suspend inline fun reply(message: String) = reply(message, Unit)
+
+    inner class IntConstraint(
+        val min: Int? = null,
+        val max: Int? = null
+    ) {
+        inline operator fun invoke(value: Int, onError: (Int) -> Int): Int {
+            min?.let { min -> if (value < min) return onError(value) }
+            max?.let { min -> if (value > min) return onError(value) }
+            return value
+        }
+
+        inline operator fun invoke(value: Int?, onError: (Int) -> Int): Int? =
+            value?.let { invoke(it, onError) }
+    }
+    
+    inner class TypeConstraint {
+        inline operator fun <reified Has, reified Want> invoke(value: Has, onError: (Has) -> Want): Want =
+            (value as? Want) ?: onError(value)
+
+        @JvmName("invokeNullable")
+        inline operator fun <reified Has, reified Want> invoke(value: Has?, onError: (Has) -> Want): Want? =
+            value?.let { invoke(it, onError) }
+
+        // This exists because the nullable `invoke` overload may not be called where expected as the firsts generic type can be nullable.
+        inline fun <reified Has, reified Want> optional(value: Has?, onError: (Has) -> Want) =
+            this.invoke(value, onError)
     }
 }
 

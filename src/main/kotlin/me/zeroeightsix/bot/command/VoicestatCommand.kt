@@ -16,11 +16,8 @@ object VoicestatCommand {
         suspend fun CommandContext.execute(channel: AbstractChannel?) {
             val memberId = event.member?.idLong ?: return
 
-            val channel = channel?.let {
-                (it as? VoiceChannel) ?: run {
-                    event.reply(translate("must_supply_vc"), ephemeral = true).await()
-                    return
-                }
+            val channel: VoiceChannel? = TypeConstraint().optional(channel) {
+                return reply(translate("must_supply_vc"))
             }
 
             val times =
