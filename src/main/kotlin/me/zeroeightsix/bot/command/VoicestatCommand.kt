@@ -18,7 +18,7 @@ object VoicestatCommand {
 
             val channel = channel?.let {
                 (it as? VoiceChannel) ?: run {
-                    ctx.event.reply("You must supply a voice channel.", ephemeral = true).await()
+                    ctx.event.reply(ctx.translate("must_supply_vc"), ephemeral = true).await()
                     return
                 }
             }
@@ -41,11 +41,11 @@ object VoicestatCommand {
 //                })
 
                 ctx.event.reply(times.joinToString("\n") {
-                    val channelName = jda.getVoiceChannelById(it.channelId)?.name ?: "Unknown channel"
+                    val channelName = jda.getVoiceChannelById(it.channelId)?.name ?: ctx.translate("unknown_channel")
                     "$channelName: ${Duration.ofMillis(it.timeSpent).humanReadable}"
                 })
             } else {
-                ctx.event.reply("I haven't seen you in a voice channel before.")
+                ctx.event.reply(ctx.translate("not_in_vc_before"))
             }.setEphemeral(true).await()
         }
     }

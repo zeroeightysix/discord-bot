@@ -29,9 +29,7 @@ object CountCommand {
             usages.find { it.memberId eq memberId }!!
         }
 
-
-        ctx.event.reply("You've counted to ${usage.commandUsages}!", ephemeral = true)
-            .await()
+        ctx.event.reply(ctx.translate("counted_to", usage.commandUsages), ephemeral = true).await()
     }
 
 }
