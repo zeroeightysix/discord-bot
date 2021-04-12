@@ -196,7 +196,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                 valueParameters.joinToString(", ") { it.type.jvmErasure.qualifiedName ?: "UNKNOWN" }
             }
             val wantedSignature by lazy {
-                (listOf(contextClazz.qualifiedName!!) + arguments.map { "${it.name}: {it.type.name.toLowerCase().capitalize()}" })
+                (listOf(contextClazz.qualifiedName!!) + arguments.map { "${it.name}: ${it.type.name.toLowerCase().capitalize()}" })
                     .joinToString(", ")
             }
 
