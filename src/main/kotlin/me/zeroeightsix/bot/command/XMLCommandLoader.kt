@@ -15,6 +15,7 @@ import kotlin.reflect.KParameter.Kind.EXTENSION_RECEIVER
 import kotlin.reflect.KParameter.Kind.INSTANCE
 import kotlin.reflect.KParameter.Kind.VALUE
 import kotlin.reflect.full.callSuspendBy
+import kotlin.reflect.full.extensionReceiverParameter
 import kotlin.reflect.full.isSupertypeOf
 import kotlin.reflect.full.starProjectedType
 import kotlin.reflect.full.valueParameters
@@ -189,6 +190,11 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                 ?: throw RuntimeException("${clazz.qualifiedName} has no `execute` function")
             if (!executeFun.isSuspend) throw RuntimeException("'$executeFun' must be suspend")
 
+            val recParam = executeFun.extensionReceiverParameter?.also {
+                if (it.type.jvmErasure != contextClazz)
+                    throw RuntimeException("$it must be of type ${contextClazz.qualifiedName!!}.")
+            }
+
             val valueParameters = executeFun.valueParameters
             val specialParams = executeFun.parameters.minus(valueParameters)
 
@@ -204,24 +210,27 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
             val specials = specialParams.map {
                 it to when (it.kind) {
                     INSTANCE -> { _: T -> instance }
-                    EXTENSION_RECEIVER -> TODO()
+                    EXTENSION_RECEIVER -> (recParam ?: unreachable()).run { { ctx: T -> ctx } }
                     VALUE -> unreachable()
                 }
             }
 
-            if (valueParameters.size <= arguments.size) {
+            // When the execute function is not an extending function (on the context), we expect the context as first parameter.
+            val parOffset = if (recParam == null) 1 else 0
+
+            if (valueParameters.size + parOffset < arguments.size) {
                 logger.warn { "'$executeFun' has too little arguments, but we can still proceed. Current signature: ($gottenSignature), wanted: ($wantedSignature)." }
             }
 
             // Now, we match every value parameter to the command argument.
             val values = valueParameters.mapIndexed { idx, par ->
-                // The first parameter should always be the context
-                par to if (idx == 0) {
+                // If this is not an extension function on the context type, then the first parameter should always be the context
+                par to if (idx == 0 && recParam == null) {
                     if (par.type.isSupertypeOf(contextClazz.starProjectedType)) {
                         { ctx: T -> ctx }
                     } else throw RuntimeException("'$executeFun': first argument must be of type '${contextClazz.qualifiedName}'")
                 } else {
-                    val arg = arguments.getOrElse(idx - 1) {
+                    val arg = arguments.getOrElse(idx - parOffset) {
                         throw RuntimeException("'$executeFun' has more parameters than the command! Current signature: ($gottenSignature), wanted: ($wantedSignature).")
                     }
 

@@ -13,12 +13,12 @@ import java.time.Duration
 object VoicestatCommand {
 
     object Me {
-        suspend fun execute(ctx: CommandContext, channel: AbstractChannel?) {
-            val memberId = ctx.event.member?.idLong ?: return
+        suspend fun CommandContext.execute(channel: AbstractChannel?) {
+            val memberId = event.member?.idLong ?: return
 
             val channel = channel?.let {
                 (it as? VoiceChannel) ?: run {
-                    ctx.event.reply(ctx.translate("must_supply_vc"), ephemeral = true).await()
+                    event.reply(translate("must_supply_vc"), ephemeral = true).await()
                     return
                 }
             }
@@ -40,12 +40,12 @@ object VoicestatCommand {
 //                    }
 //                })
 
-                ctx.event.reply(times.joinToString("\n") {
-                    val channelName = jda.getVoiceChannelById(it.channelId)?.name ?: ctx.translate("unknown_channel")
+                event.reply(times.joinToString("\n") {
+                    val channelName = jda.getVoiceChannelById(it.channelId)?.name ?: translate("unknown_channel")
                     "$channelName: ${Duration.ofMillis(it.timeSpent).humanReadable}"
                 })
             } else {
-                ctx.event.reply(ctx.translate("not_in_vc_before"))
+                event.reply(translate("not_in_vc_before"))
             }.setEphemeral(true).await()
         }
     }
