@@ -1,4 +1,4 @@
-package me.zeroeightsix.bot
+package me.zeroeightsix.bot.util
 
 import net.dv8tion.jda.api.entities.Member
 import org.jetbrains.annotations.PropertyKey

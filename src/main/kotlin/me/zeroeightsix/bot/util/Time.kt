@@ -1,4 +1,4 @@
-package me.zeroeightsix.bot
+package me.zeroeightsix.bot.util
 
 import java.time.Duration
 

@@ -1,4 +1,4 @@
-package me.zeroeightsix.bot
+package me.zeroeightsix.bot.util
 
 import org.cache2k.Cache2kBuilder
 

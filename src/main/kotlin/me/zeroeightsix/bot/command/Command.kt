@@ -1,8 +1,8 @@
 package me.zeroeightsix.bot.command
 
 import dev.minn.jda.ktx.await
-import me.zeroeightsix.bot.BUNDLE
-import me.zeroeightsix.bot.locale
+import me.zeroeightsix.bot.util.BUNDLE
+import me.zeroeightsix.bot.util.locale
 import net.dv8tion.jda.api.entities.Command.OptionType.BOOLEAN
 import net.dv8tion.jda.api.entities.Command.OptionType.CHANNEL
 import net.dv8tion.jda.api.entities.Command.OptionType.INTEGER
@@ -42,10 +42,10 @@ interface L10n {
     val locale: Locale
 
     infix fun translate(@PropertyKey(resourceBundle = BUNDLE) key: String) =
-        me.zeroeightsix.bot.translate(this.locale, key)
+        me.zeroeightsix.bot.util.translate(this.locale, key)
 
     fun translate(@PropertyKey(resourceBundle = BUNDLE) key: String, vararg params: Any) =
-        me.zeroeightsix.bot.translate(this.locale, key, params)
+        me.zeroeightsix.bot.util.translate(this.locale, key, params)
 
 }
 

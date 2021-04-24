@@ -3,7 +3,7 @@
 package me.zeroeightsix.bot.command
 
 import dev.minn.jda.ktx.await
-import me.zeroeightsix.bot.humanReadable
+import me.zeroeightsix.bot.util.humanReadable
 import me.zeroeightsix.bot.jda
 import me.zeroeightsix.bot.service.VoiceTracker
 import net.dv8tion.jda.api.entities.AbstractChannel

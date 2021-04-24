@@ -4,7 +4,7 @@ import dev.minn.jda.ktx.listener
 import me.zeroeightsix.bot.ChannelID
 import me.zeroeightsix.bot.ID
 import me.zeroeightsix.bot.MemberID
-import me.zeroeightsix.bot.cache
+import me.zeroeightsix.bot.util.cache
 import me.zeroeightsix.bot.database
 import me.zeroeightsix.bot.jda
 import me.zeroeightsix.bot.storage.VoiceChatTimes
