@@ -20,6 +20,9 @@ repositories {
 dependencies {
     implementation("org.jetbrains:annotations:20.1.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.32")
+    // Cache
+    implementation("org.cache2k:cache2k-api:2.0.0.Final")
+    implementation("org.cache2k:cache2k-core:2.0.0.Final")
     // JDA
 //    implementation("net.dv8tion:JDA:${jdaVersion}")
     implementation("com.github.DV8FromTheWorld:JDA:feature~slash-commands-SNAPSHOT")
@@ -45,6 +48,6 @@ tasks.test {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "13"
-        freeCompilerArgs = freeCompilerArgs + "-Xallow-result-return-type"
+        freeCompilerArgs = freeCompilerArgs + "-Xallow-result-return-type" + "-Xopt-in=io.lettuce.core.ExperimentalLettuceCoroutinesApi"
     }
 }
