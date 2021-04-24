@@ -76,6 +76,9 @@ class CommandContext(val event: SlashCommandEvent) : CommandOptions, L10n {
 
     suspend inline fun reply(message: String) = reply(message, Unit)
 
+    inline val String.err: String
+        get() = ":warning: $this"
+
     inner class IntConstraint(
         val min: Int? = null,
         val max: Int? = null

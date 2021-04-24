@@ -17,7 +17,7 @@ object VoicestatCommand {
             val memberId = event.member?.idLong ?: return
 
             val channel: VoiceChannel? = TypeConstraint().optional(channel) {
-                return reply(translate("must_supply_vc"))
+                return reply(translate("must_supply_vc").err)
             }
 
             val times = (if (channel == null) VoiceTracker.getTimes(memberId) else
@@ -41,7 +41,8 @@ object VoicestatCommand {
                     "$channelName: ${Duration.ofMillis(it.value!!).humanReadable}"
                 })
             } else {
-                event.reply(translate("not_in_vc_before"))
+                event.reply((channel?.let { translate("not_in_vc_before", it.name) }
+                    ?: translate("not_in_any_vc_before")).err)
             }.setEphemeral(true).await()
         }
     }
