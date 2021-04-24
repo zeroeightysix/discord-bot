@@ -19,6 +19,7 @@ const val TOKEN_VAR_NAME = "DISCORD_TOKEN"
 const val GUILD_VAR_NAME = "GUILD_ID"
 const val DB_USER_VAR_NAME = "DB_USER"
 const val DB_PASS_VAR_NAME = "DB_PASSWORD"
+const val DB_NAME = "DB_NAME"
 
 private val logger = KotlinLogging.logger {}
 
@@ -48,7 +49,8 @@ suspend fun main() {
 
     connectDatabase(
         System.getenv(DB_USER_VAR_NAME) ?: return missingEnv(DB_USER_VAR_NAME),
-        System.getenv(DB_PASS_VAR_NAME) ?: return missingEnv(DB_PASS_VAR_NAME)
+        System.getenv(DB_PASS_VAR_NAME) ?: return missingEnv(DB_PASS_VAR_NAME),
+        System.getenv(DB_NAME) ?: "bot"
     )
 
     // Connect to discord
