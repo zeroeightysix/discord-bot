@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.requests.GatewayIntent.GUILD_VOICE_STATES
 import net.dv8tion.jda.api.utils.MemberCachePolicy
-import net.dv8tion.jda.api.utils.cache.CacheFlag
+import net.dv8tion.jda.api.utils.cache.CacheFlag.VOICE_STATE
 
 const val TOKEN_VAR_NAME = "DISCORD_TOKEN"
 const val GUILD_VAR_NAME = "GUILD_ID"
@@ -25,7 +25,9 @@ private val logger = KotlinLogging.logger {}
 lateinit var jda: JDA
     private set
 
-typealias MemberID = Long
+typealias ID = Long
+typealias MemberID = ID
+typealias ChannelID = ID
 
 suspend fun main() {
     logger.info { "Starting up" }
@@ -51,7 +53,7 @@ suspend fun main() {
 
     // Connect to discord
     jda = JDABuilder.createLight(token, GUILD_VOICE_STATES)
-        .enableCache(CacheFlag.VOICE_STATE)
+        .enableCache(VOICE_STATE)
         .setMemberCachePolicy(MemberCachePolicy.VOICE)
         .injectKTX()
         .build()
