@@ -20,9 +20,8 @@ object VoicestatCommand {
                 return reply(translate("must_supply_vc"))
             }
 
-            val times =
-                (if (channel == null) listOf(VoiceTracker.databaseGetTime(memberId))
-                else VoiceTracker.databaseGetTime(memberId, channel.idLong)).filterNotNull()
+            val times = (if (channel == null) VoiceTracker.getTimes(memberId) else
+                mapOf(channel.idLong to VoiceTracker.getTime(memberId, channel.idLong)).filterValues { it != null })
 
             if (times.isNotEmpty()) {
                 // TODO: Embeds can not be ephemeral.
@@ -37,9 +36,9 @@ object VoicestatCommand {
 //                    }
 //                })
 
-                event.reply(times.joinToString("\n") {
-                    val channelName = jda.getVoiceChannelById(it.channelId)?.name ?: translate("unknown_channel")
-                    "$channelName: ${Duration.ofMillis(it.timeSpent).humanReadable}"
+                event.reply(times.entries.joinToString("\n") {
+                    val channelName = jda.getVoiceChannelById(it.key)?.name ?: translate("unknown_channel")
+                    "$channelName: ${Duration.ofMillis(it.value!!).humanReadable}"
                 })
             } else {
                 event.reply(translate("not_in_vc_before"))
