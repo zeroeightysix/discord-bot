@@ -27,8 +27,10 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
         get() = commandStack.peek().subCommands.size
 
     private val commandStack = Stack<XMLCommand>().also {
-        it.push(XMLCommand("", ""))
+        it.push(XMLCommand("", "", ""))
     }
+
+    private val categoryStack = Stack<String>()
 
     override fun startElement(uri: String, localName: String, qName: String, attributes: Attributes) {
         fun missing(elementName: String, attributeName: String) =
@@ -38,7 +40,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
             "command" -> {
                 val name = attributes.getValue("name") ?: throw missing("command", "name")
                 val comment = attributes.getValue("comment") ?: throw missing("arg", "comment")
-                val command = XMLCommand(name, comment)
+                val command = XMLCommand(name, comment, this.categoryStack.joinToString("."))
 
                 commandStack.push(command)
             }
@@ -50,6 +52,10 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                 val command = commandStack.peek()
 
                 command.arguments += XMLArg(name, OptionType.valueOf(type.toUpperCase()), comment, required)
+            }
+            "category" -> {
+                val name = attributes.getValue("name") ?: throw missing("category", "name")
+                categoryStack.push(name)
             }
         }
     }
@@ -65,6 +71,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
 
                 commandStack.peek().subCommands += finishedCommand
             }
+            "category" -> categoryStack.pop()
         }
     }
 
@@ -81,9 +88,14 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
             val name = command.name
 
             // The class names to try
-            val toTry = arrayOf(
-                "$packageName.${name.capitalize()}Command",
+            val base = if (command.category.isEmpty()) {
                 "$packageName.${name.capitalize()}"
+            } else {
+                "$packageName.${command.category}.${name.capitalize()}"
+            }
+            val toTry = arrayOf(
+                "${base}Command",
+                base
             )
 
             // Try to find the class, otherwise throw a (hopefully helpful) error
@@ -131,8 +143,9 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
     private data class XMLCommand(
         val name: String,
         val comment: String,
+        val category: String,
+        val subCommands: MutableList<XMLCommand> = mutableListOf(),
         val arguments: MutableList<XMLArg> = mutableListOf(),
-        val subCommands: MutableList<XMLCommand> = mutableListOf()
     ) {
         private val logger = KotlinLogging.logger {}
 
@@ -152,18 +165,19 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
             clazz: KClass<*>,
             contextClazz: KClass<T>
         ): CommandExecutor<T, CommandFailure> {
-            val commandMap = subCommands.map {
-                val name = it.name
-                val inner = clazz.nestedClasses.find { nested ->
-                    nested.simpleName?.toLowerCase() == name.toLowerCase().replace("_", "")
-                }
-                    ?: throw RuntimeException("Subcommand '$name' has no related inner class in $clazz")
-                // Get the instance, fail if clazz is not an `object`
-                val instance = inner.objectInstance
-                    ?: throw RuntimeException("${clazz.qualifiedName} is not an object declaration")
+            val commandMap =
+                subCommands.associateWith {
+                    val name = it.name
+                    val inner = clazz.nestedClasses.find { nested ->
+                        nested.simpleName?.toLowerCase() == name.toLowerCase().replace("_", "")
+                    }
+                        ?: throw RuntimeException("Subcommand '$name' has no related inner class in $clazz")
+                    // Get the instance, fail if clazz is not an `object`
+                    val instance = inner.objectInstance
+                        ?: throw RuntimeException("${clazz.qualifiedName} is not an object declaration")
 
-                it to it.createExecutor(instance, inner, contextClazz)
-            }.toMap()
+                    it.createExecutor(instance, inner, contextClazz)
+                }
 
             return object : CommandExecutor<T, CommandFailure> {
                 override suspend fun execute(context: T): Result<CommandFailure> {
@@ -202,7 +216,11 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                 valueParameters.joinToString(", ") { it.type.jvmErasure.qualifiedName ?: "UNKNOWN" }
             }
             val wantedSignature by lazy {
-                (listOf(contextClazz.qualifiedName!!) + arguments.map { "${it.name}: ${it.type.name.toLowerCase().capitalize()}" })
+                (listOf(contextClazz.qualifiedName!!) + arguments.map {
+                    "${it.name}: ${
+                        it.type.name.toLowerCase().capitalize()
+                    }"
+                })
                     .joinToString(", ")
             }
 
