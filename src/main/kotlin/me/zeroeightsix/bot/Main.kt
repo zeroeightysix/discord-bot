@@ -6,6 +6,9 @@ import dev.minn.jda.ktx.listener
 import me.zeroeightsix.bot.command.CommandContext
 import me.zeroeightsix.bot.command.XMLCommandLoader
 import me.zeroeightsix.bot.service.VoiceTracker
+import me.zeroeightsix.bot.storage.Usages
+import me.zeroeightsix.bot.storage.VoiceChatTimes
+import me.zeroeightsix.bot.storage.createTablesIfNotExist
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
@@ -52,6 +55,8 @@ suspend fun main() {
         System.getenv(DB_PASS_VAR_NAME) ?: return missingEnv(DB_PASS_VAR_NAME),
         System.getenv(DB_NAME) ?: "bot"
     )
+
+    createTablesIfNotExist(listOf(Usages, VoiceChatTimes))
 
     // Connect to discord
     jda = JDABuilder.createLight(token, GUILD_VOICE_STATES)
