@@ -1,15 +1,17 @@
 package me.zeroeightsix.bot.command
 
 import mu.KotlinLogging
-import net.dv8tion.jda.api.entities.Command.OptionType
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction
+import net.dv8tion.jda.api.interactions.commands.OptionType
+import net.dv8tion.jda.api.interactions.commands.build.CommandData
+import net.dv8tion.jda.api.interactions.commands.build.OptionData
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
 import org.xml.sax.Attributes
 import org.xml.sax.SAXException
 import org.xml.sax.helpers.DefaultHandler
 import java.io.InputStream
 import java.util.*
 import javax.xml.parsers.SAXParserFactory
-import kotlin.collections.HashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter.Kind.EXTENSION_RECEIVER
 import kotlin.reflect.KParameter.Kind.INSTANCE
@@ -127,7 +129,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
         }
     }
 
-    fun buildCommands(): List<CommandUpdateAction.CommandData> = this.commandStack.peek().subCommands.map {
+    fun buildCommands(): List<CommandData> = this.commandStack.peek().subCommands.map {
         it.createCommandData()
     }
 
@@ -270,20 +272,20 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
             }
         }
 
-        fun createCommandData(): CommandUpdateAction.CommandData {
+        fun createCommandData(): CommandData {
             fun createOptions(arguments: MutableList<XMLArg>) =
-                arguments.map { CommandUpdateAction.OptionData(it.type, it.name, it.comment).setRequired(it.required) }
+                arguments.map { OptionData(it.type, it.name, it.comment).setRequired(it.required) }
 
-            val rootCommandData = CommandUpdateAction.CommandData(name, comment)
+            val rootCommandData = CommandData(name, comment)
             if (subCommands.isNotEmpty()) {
                 subCommands.forEach { subCommand ->
                     if (subCommand.subCommands.isNotEmpty()) {
                         // `subCommand` is a subcommand group
-                        val groupData = CommandUpdateAction.SubcommandGroupData(subCommand.name, subCommand.comment)
+                        val groupData = SubcommandGroupData(subCommand.name, subCommand.comment)
                         subCommand.subCommands.forEach { subSubCommand ->
                             // subcommands in a group can not be groups
                             groupData.addSubcommand(
-                                CommandUpdateAction.SubcommandData(
+                                SubcommandData(
                                     subSubCommand.name,
                                     subSubCommand.comment
                                 ).also { ssData ->
@@ -294,7 +296,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                     } else {
                         // `subCommand` is not a subcommand group
                         rootCommandData.addSubcommand(
-                            CommandUpdateAction.SubcommandData(
+                            SubcommandData(
                                 subCommand.name,
                                 subCommand.comment
                             ).also { sData ->
