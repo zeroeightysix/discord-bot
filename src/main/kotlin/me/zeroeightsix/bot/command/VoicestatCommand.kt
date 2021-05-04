@@ -2,6 +2,7 @@
 
 package me.zeroeightsix.bot.command
 
+import dev.minn.jda.ktx.Embed
 import dev.minn.jda.ktx.await
 import me.zeroeightsix.bot.util.humanReadable
 import me.zeroeightsix.bot.jda
@@ -24,21 +25,15 @@ object VoicestatCommand {
                 mapOf(channel.idLong to VoiceTracker.getTime(memberId, channel.idLong)).filterValues { it != null })
 
             if (times.isNotEmpty()) {
-                // TODO: Embeds can not be ephemeral.
-//                ctx.event.reply(Embed {
-//                    title = "Voice channel times"
-//                    times.forEach {
-//                        field {
-//                            inline = true
-//                            title = jda.getGuildChannelById(it.channelId)?.name ?: "Unknown channel"
-//                            value = "${(it.timeSpent / 1000)}s"
-//                        }
-//                    }
-//                })
-
-                event.reply(times.entries.joinToString("\n") {
-                    val channelName = jda.getVoiceChannelById(it.key)?.name ?: translate("unknown_channel")
-                    "$channelName: ${Duration.ofMillis(it.value!!).humanReadable}"
+                event.reply(Embed {
+                    title = "Voice channel times"
+                    times.forEach {
+                        field {
+                            inline = true
+                            title = jda.getGuildChannelById(it.key)?.name ?: "Unknown channel"
+                            value = "${(Duration.ofMillis(it.value ?: 0).humanReadable)}s"
+                        }
+                    }
                 })
             } else {
                 event.reply((channel?.let { translate("not_in_vc_before", it.name) }
