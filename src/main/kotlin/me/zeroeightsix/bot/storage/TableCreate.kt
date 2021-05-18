@@ -11,9 +11,12 @@ interface TableCreate {
         "create table if not exists $tableName\n($tableDefinition);"
 }
 
+fun createTablesIfNotExist() =
+    createTablesIfNotExist(listOf(Coins, Usages, VoiceChatTimes, LastClaims))
+
 // figure you'd change this to a vararg?
 // yeah, right, kotlinc
-fun <T> createTablesIfNotExist(tables: List<T>)
+private fun <T> createTablesIfNotExist(tables: List<T>)
         where T : Table<*>, T : TableCreate {
     for (table in tables) {
         val query = table.createIfNotExistsQuery(table.tableName)

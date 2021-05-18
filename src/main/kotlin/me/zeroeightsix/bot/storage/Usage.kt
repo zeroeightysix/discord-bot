@@ -1,5 +1,6 @@
 package me.zeroeightsix.bot.storage
 
+import me.zeroeightsix.bot.MemberID
 import org.ktorm.database.Database
 import org.ktorm.entity.Entity
 import org.ktorm.entity.sequenceOf
@@ -21,7 +22,7 @@ object Usages : Table<Usage>("usages"), TableCreate {
 interface Usage : Entity<Usage> {
     companion object : Entity.Factory<Usage>()
 
-    val memberId: Long
+    val memberId: MemberID
     val commandUsages: Int
 }
 
