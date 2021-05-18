@@ -4,7 +4,7 @@ plugins {
     kotlin("jvm") version "1.4.32"
 }
 
-group = "me.ridan"
+group = "me.zeroeightsix"
 version = "1.0-SNAPSHOT"
 
 val jdaVersion = "4.2.1_253"
@@ -47,7 +47,7 @@ tasks.test {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "13"
+        jvmTarget = "11"
         freeCompilerArgs = freeCompilerArgs + "-Xallow-result-return-type" + "-Xopt-in=io.lettuce.core.ExperimentalLettuceCoroutinesApi"
     }
 }
