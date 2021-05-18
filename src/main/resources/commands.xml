@@ -6,4 +6,8 @@
             <arg name="channel" comment="What channel to get statistics of" type="channel" required="false"/>
         </command>
     </command>
+
+    <category name="economy">
+        <command name="claim" comment="Claim your daily coins"/>
+    </category>
 </commands>
