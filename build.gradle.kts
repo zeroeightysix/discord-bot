@@ -1,15 +1,15 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.5.0"
 }
 
 group = "me.zeroeightsix"
 version = "1.0-SNAPSHOT"
 
 val jdaVersion = "4.2.1_253"
-val ktxVersion = "1a45395155"
-val ktormVersion = "3.3.0"
+val ktxVersion = "985db8173e"
+val ktormVersion = "3.4.1"
 
 repositories {
     mavenCentral()
@@ -19,7 +19,8 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains:annotations:20.1.0")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.32")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
     // Cache
     implementation("org.cache2k:cache2k-api:2.0.0.Final")
     implementation("org.cache2k:cache2k-core:2.0.0.Final")
