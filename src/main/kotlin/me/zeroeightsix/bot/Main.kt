@@ -78,6 +78,10 @@ suspend fun main() {
         }
     }
 
+    jda.listener<ShutdownEvent> {
+        logger.info("Bye!")
+    }
+
     initMustInit()
 }
 
