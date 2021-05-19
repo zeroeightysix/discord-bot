@@ -31,7 +31,7 @@ object VoicestatCommand {
                         field {
                             inline = true
                             title = jda.getGuildChannelById(it.key)?.name ?: "Unknown channel"
-                            value = "${(Duration.ofMillis(it.value ?: 0).humanReadable)}s"
+                            value = (Duration.ofMillis(it.value ?: 0).humanReadable)
                         }
                     }
                 })
