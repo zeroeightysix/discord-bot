@@ -11,7 +11,9 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.ReadyEvent
+import net.dv8tion.jda.api.events.ShutdownEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
+import net.dv8tion.jda.api.requests.GatewayIntent.GUILD_MESSAGES
 import net.dv8tion.jda.api.requests.GatewayIntent.GUILD_VOICE_STATES
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag.VOICE_STATE
@@ -57,7 +59,7 @@ suspend fun main() {
     createTablesIfNotExist()
 
     // Connect to discord
-    jda = JDABuilder.createLight(token, GUILD_VOICE_STATES)
+    jda = JDABuilder.createLight(token, GUILD_VOICE_STATES, GUILD_MESSAGES)
         .enableCache(VOICE_STATE)
         .setMemberCachePolicy(MemberCachePolicy.VOICE)
         .injectKTX()

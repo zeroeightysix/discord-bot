@@ -21,6 +21,9 @@ dependencies {
     implementation("org.jetbrains:annotations:20.1.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
+    // Images
+    implementation("com.sksamuel.scrimage:scrimage-core:4.0.18")
+    implementation("com.sksamuel.scrimage:scrimage-filters:4.0.18")
     // Cache
     implementation("org.cache2k:cache2k-api:2.0.0.Final")
     implementation("org.cache2k:cache2k-core:2.0.0.Final")

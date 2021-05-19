@@ -7,6 +7,10 @@
         </command>
     </command>
 
+    <category name="image">
+        <command name="blur" comment="Provided an image, blur it."/>
+    </category>
+
     <category name="economy">
         <command name="claim" comment="Claim your daily coins"/>
     </category>
