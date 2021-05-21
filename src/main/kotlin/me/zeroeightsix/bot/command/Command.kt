@@ -69,13 +69,6 @@ class CommandContext(val event: SlashCommandEvent) : CommandOptions, L10n {
         }
     }
 
-    suspend fun <T> reply(message: String, ret: T): T {
-        event.reply(message, ephemeral = true).await()
-        return ret
-    }
-
-    suspend inline fun reply(message: String) = reply(message, Unit)
-
     inline val String.err: String
         get() = ":warning: $this"
 

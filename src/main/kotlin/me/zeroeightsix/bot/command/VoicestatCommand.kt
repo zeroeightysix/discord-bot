@@ -18,7 +18,8 @@ object VoicestatCommand {
             val memberId = event.member?.idLong ?: return
 
             val channel: VoiceChannel? = TypeConstraint().optional(channel) {
-                return reply(translate("must_supply_vc").err)
+                event.reply(translate("must_supply_vc").err).await()
+                return
             }
 
             val times = (if (channel == null) VoiceTracker.getTimes(memberId) else

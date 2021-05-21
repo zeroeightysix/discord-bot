@@ -1,5 +1,6 @@
 package me.zeroeightsix.bot.command.economy
 
+import dev.minn.jda.ktx.await
 import me.zeroeightsix.bot.MemberID
 import me.zeroeightsix.bot.command.CommandContext
 import me.zeroeightsix.bot.database
@@ -36,11 +37,11 @@ object ClaimCommand {
         if (mayClaimAgain(duration)) {
             val newBalance = claimCoins(member.idLong)
 
-            reply(translate("claimed_and_now_have", CLAIM_AMOUNT, newBalance.balance))
+            event.reply(translate("claimed_and_now_have", CLAIM_AMOUNT, newBalance.balance)).await()
         } else {
             val timeToGo = CLAIM_TIMEOUT.minus(duration)
 
-            reply(translate("claimed_too_early", timeToGo.humanReadable))
+            event.reply(translate("claimed_too_early", timeToGo.humanReadable)).await()
         }
     }
 
