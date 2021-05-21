@@ -45,6 +45,10 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
 }
 
+configurations.forEach {
+    it.exclude("ch.qos.logback")
+}
+
 tasks.test {
     useJUnitPlatform()
 }
