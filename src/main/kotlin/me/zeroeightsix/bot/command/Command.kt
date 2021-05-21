@@ -1,6 +1,6 @@
 package me.zeroeightsix.bot.command
 
-import dev.minn.jda.ktx.await
+import dev.minn.jda.ktx.EmbedBuilder
 import me.zeroeightsix.bot.util.BUNDLE
 import me.zeroeightsix.bot.util.locale
 import net.dv8tion.jda.api.entities.Message
@@ -71,6 +71,24 @@ class CommandContext(val event: SlashCommandEvent) : CommandOptions, L10n {
 
     inline val String.err: String
         get() = ":warning: $this"
+
+    inline val String.progressInput: MessageEmbed
+        get() = EmbedBuilder {
+            title = translate("progress_awaiting_input")
+            description = this@progressInput
+        }.build()
+
+    inline val String.progressWorking: MessageEmbed
+        get() = EmbedBuilder {
+            title = translate("progress_working")
+            description = this@progressWorking
+        }.build()
+
+    inline val String.progressSuccess: MessageEmbed
+        get() = EmbedBuilder {
+            title = translate("progress_success")
+            description = this@progressSuccess
+        }.build()
 
     inner class IntConstraint(
         val min: Int? = null,
