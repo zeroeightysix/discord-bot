@@ -34,6 +34,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
     }
 
     private val categoryStack = Stack<String>()
+    private var data: String? = null
 
     override fun startElement(uri: String, localName: String, qName: String, attributes: Attributes) {
         fun missing(elementName: String, attributeName: String) =
@@ -75,7 +76,14 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                 commandStack.peek().subCommands += finishedCommand
             }
             "category" -> categoryStack.pop()
+            "choice" -> (commandStack.peek().arguments.lastOrNull()
+                ?: throw SAXException("<choice> block must appear within an <arg> block"))
+                .choices.add(this.data ?: throw SAXException("choice block must contain a choice"))
         }
+    }
+
+    override fun characters(ch: CharArray?, start: Int, length: Int) {
+        this.data = String(ch!!, start, length)
     }
 
     inline fun <reified T : CommandOptions> createExecutor(packageName: String): CommandExecutor<T, CommandFailure> =
@@ -275,7 +283,17 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
 
         fun createCommandData(): CommandData {
             fun createOptions(arguments: MutableList<XMLArg>) =
-                arguments.map { OptionData(it.type, it.name, it.comment).setRequired(it.required) }
+                arguments.map {
+                    OptionData(it.type, it.name, it.comment).setRequired(it.required).also { data ->
+                        if (it.choices.isNotEmpty()) {
+                            when (it.type) {
+                                OptionType.INTEGER -> it.choices.forEach { choice -> data.addChoice(choice, choice.toInt()) }
+                                OptionType.STRING -> it.choices.forEach { choice -> data.addChoice(choice, choice) }
+                                else -> throw SAXException("Only INTEGER and STRING types may have choices")
+                            }
+                        }
+                    }
+                }
 
             val rootCommandData = CommandData(name, comment)
             if (subCommands.isNotEmpty()) {
@@ -313,7 +331,13 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
         }
     }
 
-    private data class XMLArg(val name: String, val type: OptionType, val comment: String, val required: Boolean)
+    private data class XMLArg(
+        val name: String,
+        val type: OptionType,
+        val comment: String,
+        val required: Boolean,
+        val choices: MutableList<String> = mutableListOf()
+    )
 
 }
 
