@@ -10,11 +10,19 @@ object GifReader {
         val gif = GifDecoder.read(stream.readAllBytes())
         return Gif(
             (0 until gif.frameCount).map { ImmutableImage.wrapAwt(gif.getFrame(it)) },
+            gif.width,
+            gif.height,
             gif.getDelay(0).toLong(),
             gif.repetitions != 0
         )
     }
 
-    class Gif(val images: List<ImmutableImage>, val delay: Long, val loop: Boolean)
+    class Gif(
+        val images: List<ImmutableImage>,
+        val width: Int,
+        val height: Int,
+        val delay: Long,
+        val loop: Boolean
+    )
 
 }
