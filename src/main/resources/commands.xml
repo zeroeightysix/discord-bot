@@ -11,6 +11,25 @@
         <command name="filter" comment="Apply a filter to an image or animated GIF">
             <arg name="filter" comment="Which filter to apply" type="string" required="true">
                 <choice>blur</choice>
+                <choice>bump</choice>
+                <choice>chrome</choice>
+                <choice>crystallize</choice>
+                <choice>dither</choice>
+                <choice>edge</choice>
+                <choice>emboss</choice>
+                <choice>glow</choice>
+                <choice>gotham</choice>
+                <choice>grayscale</choice>
+                <choice>hsb</choice>
+                <choice>invert</choice>
+                <choice>kaleidoscope</choice>
+                <choice>nashville</choice>
+                <choice>offset</choice>
+                <choice>old</choice>
+                <choice>pixelate</choice>
+                <choice>prewitt</choice>
+                <choice>roberts</choice>
+                <choice>rylanders</choice>
             </arg>
             <arg name="strength" comment="If applicable, the strength of the filter" type="string" required="false">
                 <choice>weak</choice>
