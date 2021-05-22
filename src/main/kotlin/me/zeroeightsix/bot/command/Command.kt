@@ -43,7 +43,7 @@ interface L10n {
     infix fun translate(@PropertyKey(resourceBundle = BUNDLE) key: String) =
         me.zeroeightsix.bot.util.translate(this.locale, key)
 
-    fun translate(@PropertyKey(resourceBundle = BUNDLE) key: String, vararg params: Any) =
+    fun translate(@PropertyKey(resourceBundle = BUNDLE) key: String, vararg params: Any?) =
         me.zeroeightsix.bot.util.translate(this.locale, key, params)
 
 }

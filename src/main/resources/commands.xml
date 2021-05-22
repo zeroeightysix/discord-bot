@@ -12,6 +12,12 @@
             <arg name="filter" comment="Which filter to apply" type="string" required="true">
                 <choice>blur</choice>
             </arg>
+            <arg name="strength" comment="If applicable, the strength of the filter" type="string" required="false">
+                <choice>weak</choice>
+                <choice>normal</choice>
+                <choice>strong</choice>
+                <choice>overkill</choice>
+            </arg>
         </command>
     </category>
 
