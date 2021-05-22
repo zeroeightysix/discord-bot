@@ -3,8 +3,6 @@
 package me.zeroeightsix.bot.command.image
 
 import com.sksamuel.scrimage.ImmutableImage
-import com.sksamuel.scrimage.color.Grayscale
-import com.sksamuel.scrimage.filter.BrightnessFilter
 import com.sksamuel.scrimage.filter.BumpFilter
 import com.sksamuel.scrimage.filter.ChromeFilter
 import com.sksamuel.scrimage.filter.CrystallizeFilter
@@ -12,16 +10,13 @@ import com.sksamuel.scrimage.filter.DitherFilter
 import com.sksamuel.scrimage.filter.EdgeFilter
 import com.sksamuel.scrimage.filter.EmbossFilter
 import com.sksamuel.scrimage.filter.Filter
-import com.sksamuel.scrimage.filter.GammaFilter
 import com.sksamuel.scrimage.filter.GlowFilter
 import com.sksamuel.scrimage.filter.GothamFilter
 import com.sksamuel.scrimage.filter.GrayscaleFilter
 import com.sksamuel.scrimage.filter.HSBFilter
 import com.sksamuel.scrimage.filter.InvertFilter
 import com.sksamuel.scrimage.filter.KaleidoscopeFilter
-import com.sksamuel.scrimage.filter.NashvilleFilter
 import com.sksamuel.scrimage.filter.OffsetFilter
-import com.sksamuel.scrimage.filter.OldPhotoFilter
 import com.sksamuel.scrimage.filter.PixelateFilter
 import com.sksamuel.scrimage.filter.PrewittFilter
 import com.sksamuel.scrimage.filter.RobertsFilter
@@ -42,7 +37,6 @@ import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.*
 import kotlin.math.ceil
-import kotlin.math.log2
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -164,6 +158,7 @@ object FilterCommand {
             "prewitt" -> { _, _ -> PrewittFilter() }
             "roberts" -> { _, _ -> RobertsFilter() }
             "rylanders" -> { _, _ -> RylandersFilter() }
+            "sharpen" -> { _, _ -> SharpenFilter.added(modifier * 3f) }
             else -> {
                 event.reply(translate("unknown_filter").progressBorked).await()
                 null
