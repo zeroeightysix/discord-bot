@@ -38,6 +38,9 @@
                 <choice>overkill</choice>
             </arg>
         </command>
+        <command name="scaleimage" comment="Rescales an image">
+            <arg name="factor" type="integer" required="true" comment="The factor by which to scale by. Must be between 0% and 500%."/>
+        </command>
     </category>
 
     <category name="economy">

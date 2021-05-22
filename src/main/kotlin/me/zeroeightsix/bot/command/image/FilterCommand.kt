@@ -36,6 +36,8 @@ import me.zeroeightsix.bot.util.Conversation.nextFile
 import me.zeroeightsix.bot.util.tryDelete
 import me.zeroeightsix.bot.util.withoutFileExtension
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.interactions.commands.CommandHook
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.*
@@ -57,17 +59,10 @@ object FilterCommand {
             val workingMsg = getWorkingMsg(usrStrength)
             reply.editOriginal(workingMsg.progressWorking).await()
 
-            val inputStream = attachment.retrieveInputStream().await()
             try {
-                event.message.tryDelete().await()
-
-                val (output, ext) = transformImage(attachment, inputStream, filterSupplier)
-
-                reply.editOriginal(
-                    output,
-                    "${attachment.fileName.withoutFileExtension}.$ext"
-                ).await()
-                reply.editOriginal(translate("image_modified").progressSuccess).await()
+                sendTransformedImage(attachment, reply, event) { inputStream ->
+                    transformImage(attachment, inputStream, filterSupplier)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
 
@@ -79,6 +74,24 @@ object FilterCommand {
                 ).await()
             }
         }
+    }
+
+    internal suspend fun CommandContext.sendTransformedImage(
+        attachment: Message.Attachment,
+        reply: CommandHook,
+        event: MessageReceivedEvent,
+        transform: (InputStream) -> Pair<ByteArrayInputStream, String>?
+    ) {
+        val inputStream = attachment.retrieveInputStream().await()
+        event.message.tryDelete().await()
+
+        val (output, ext) = transform(inputStream) ?: return
+
+        reply.editOriginal(
+            output,
+            "${attachment.fileName.withoutFileExtension}.$ext"
+        ).await()
+        reply.editOriginal(translate("image_modified").progressSuccess).await()
     }
 
     private fun transformImage(
@@ -115,7 +128,14 @@ object FilterCommand {
             }
             "bump" -> { _, _ -> BumpFilter() }
             "chrome" -> { _, _ -> ChromeFilter(modifier, modifier) }
-            "crystallize" -> { _, _ -> CrystallizeFilter((modifier + 1.0) * 5.0, modifier.toDouble(), 0, modifier.toDouble()) }
+            "crystallize" -> { _, _ ->
+                CrystallizeFilter(
+                    (modifier + 1.0) * 5.0,
+                    modifier.toDouble(),
+                    0,
+                    modifier.toDouble()
+                )
+            }
             "dither" -> { _, _ -> DitherFilter() }
             "edge" -> { _, _ -> EdgeFilter() }
             "emboss" -> { _, _ -> EmbossFilter() }
@@ -124,7 +144,8 @@ object FilterCommand {
             "grayscale" -> { _, _ -> GrayscaleFilter() }
             "hsb" -> { _, _ ->
                 val random = Random()
-                val rd = { (modifier + random.nextFloat() * (1f - modifier) * modifier) * if (random.nextBoolean()) -1f else 1f }
+                val rd =
+                    { (modifier + random.nextFloat() * (1f - modifier) * modifier) * if (random.nextBoolean()) -1f else 1f }
                 val h = rd()
                 val s = rd() * 0.8f
                 val b = rd() * 0.8f
@@ -132,7 +153,7 @@ object FilterCommand {
                 HSBFilter(h, s, b)
             }
             "invert" -> { _, _ -> InvertFilter() }
-            "kaleidoscope" -> { _, _ -> KaleidoscopeFilter(ceil(modifier * 20).toInt())}
+            "kaleidoscope" -> { _, _ -> KaleidoscopeFilter(ceil(modifier * 20).toInt()) }
             "offset" -> { w, h ->
                 val random = Random()
                 val x = (random.nextDouble() * modifier * w).roundToInt()
