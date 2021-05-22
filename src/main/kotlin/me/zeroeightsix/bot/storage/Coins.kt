@@ -26,6 +26,7 @@ interface Coin : Entity<Coin> {
     val balance: Float
 }
 
+@Suppress("unused")
 object LastClaims : Table<LastClaim>("last_coin_claim"), TableCreate {
     val memberId = long("member_id").primaryKey().bindTo { it.memberId }
     val lastClaim = long("last_claim_time").bindTo { it.lastClaim }

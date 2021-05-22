@@ -29,6 +29,7 @@ object Conversation {
         private fun unsubscribe() = jda.removeEventListener(this)
 
         init {
+            @Suppress("LeakingThis")
             jda.addEventListener(this)
         }
 

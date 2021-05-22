@@ -1,5 +1,6 @@
 package me.zeroeightsix.bot.command
 
+import me.zeroeightsix.bot.util.capitalise
 import mu.KotlinLogging
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
@@ -53,7 +54,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                 val required = attributes.getValue("required").toBoolean()
                 val command = commandStack.peek()
 
-                command.arguments += XMLArg(name, OptionType.valueOf(type.toUpperCase()), comment, required)
+                command.arguments += XMLArg(name, OptionType.valueOf(type.uppercase()), comment, required)
             }
             "category" -> {
                 val name = attributes.getValue("name") ?: throw missing("category", "name")
@@ -91,9 +92,9 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
 
             // The class names to try
             val base = if (command.category.isEmpty()) {
-                "$packageName.${name.capitalize()}"
+                "$packageName.${name.capitalise()}"
             } else {
-                "$packageName.${command.category}.${name.capitalize()}"
+                "$packageName.${command.category}.${name.capitalise()}"
             }
             val toTry = arrayOf(
                 "${base}Command",
@@ -171,7 +172,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                 subCommands.associateWith {
                     val name = it.name
                     val inner = clazz.nestedClasses.find { nested ->
-                        nested.simpleName?.toLowerCase() == name.toLowerCase().replace("_", "")
+                        nested.simpleName?.lowercase() == name.lowercase().replace("_", "")
                     }
                         ?: throw RuntimeException("Subcommand '$name' has no related inner class in $clazz")
                     // Get the instance, fail if clazz is not an `object`
@@ -220,7 +221,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
             val wantedSignature by lazy {
                 (listOf(contextClazz.qualifiedName!!) + arguments.map {
                     "${it.name}: ${
-                        it.type.name.toLowerCase().capitalize()
+                        it.type.name.lowercase().capitalise()
                     }"
                 })
                     .joinToString(", ")

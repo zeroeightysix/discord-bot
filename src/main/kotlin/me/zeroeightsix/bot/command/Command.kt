@@ -3,7 +3,6 @@ package me.zeroeightsix.bot.command
 import dev.minn.jda.ktx.EmbedBuilder
 import me.zeroeightsix.bot.util.BUNDLE
 import me.zeroeightsix.bot.util.locale
-import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType.BOOLEAN
@@ -129,15 +128,4 @@ class Result<out F> private constructor(val failure: F?) {
         fun <F> failure(handler: F) = Result(handler)
         fun <F> success(): Result<F> = Result(null)
     }
-
-    fun isFailure() = this.failure != null
 }
-
-fun SlashCommandEvent.reply(content: String, ephemeral: Boolean) =
-    this.reply(content).setEphemeral(ephemeral)
-
-fun SlashCommandEvent.reply(content: MessageEmbed, ephemeral: Boolean) =
-    this.reply(content).setEphemeral(ephemeral)
-
-fun SlashCommandEvent.reply(content: Message, ephemeral: Boolean) =
-    this.reply(content).setEphemeral(ephemeral)

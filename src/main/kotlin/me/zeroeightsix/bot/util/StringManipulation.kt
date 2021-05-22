@@ -17,3 +17,5 @@ val Duration.humanReadable: String
 
         return builder.toString().trimStart()
     }
+
+fun String.capitalise() = this.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
