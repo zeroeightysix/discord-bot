@@ -8,7 +8,11 @@
     </command>
 
     <category name="image">
-        <command name="blur" comment="Provided an image, blur it."/>
+        <command name="filter" comment="Apply a filter to an image or animated GIF">
+            <arg name="filter" comment="Which filter to apply" type="string" required="true">
+                <choice>blur</choice>
+            </arg>
+        </command>
     </category>
 
     <category name="economy">
