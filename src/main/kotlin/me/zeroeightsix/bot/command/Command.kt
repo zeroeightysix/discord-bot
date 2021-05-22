@@ -84,6 +84,12 @@ class CommandContext(val event: SlashCommandEvent) : CommandOptions, L10n {
             description = this@progressWorking
         }.build()
 
+    inline val String.progressBorked: MessageEmbed
+        get() = EmbedBuilder {
+            title = translate("progress_borked")
+            description = this@progressBorked
+        }.build()
+
     inline val String.progressSuccess: MessageEmbed
         get() = EmbedBuilder {
             title = translate("progress_success")

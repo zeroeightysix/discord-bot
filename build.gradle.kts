@@ -24,6 +24,7 @@ dependencies {
     // Images
     implementation("com.sksamuel.scrimage:scrimage-core:4.0.18")
     implementation("com.sksamuel.scrimage:scrimage-filters:4.0.18")
+    implementation("com.github.zh79325:open-gif:1.0.4")
     // Cache
     implementation("org.cache2k:cache2k-api:2.0.0.Final")
     implementation("org.cache2k:cache2k-core:2.0.0.Final")
