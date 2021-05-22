@@ -21,6 +21,9 @@ import com.sksamuel.scrimage.filter.PixelateFilter
 import com.sksamuel.scrimage.filter.PrewittFilter
 import com.sksamuel.scrimage.filter.RobertsFilter
 import com.sksamuel.scrimage.filter.RylandersFilter
+import com.sksamuel.scrimage.filter.SolarizeFilter
+import com.sksamuel.scrimage.filter.TritoneFilter
+import com.sksamuel.scrimage.filter.VintageFilter
 import com.sksamuel.scrimage.nio.GifSequenceWriter
 import com.sksamuel.scrimage.nio.JpegWriter
 import dev.minn.jda.ktx.await
@@ -159,6 +162,8 @@ object FilterCommand {
             "roberts" -> { _, _ -> RobertsFilter() }
             "rylanders" -> { _, _ -> RylandersFilter() }
             "sharpen" -> { _, _ -> SharpenFilter.added(modifier * 3f) }
+            "solarize" -> { _, _ -> SolarizeFilter() }
+            "vintage" -> { _, _ -> VintageFilter() }
             else -> {
                 event.reply(translate("unknown_filter").progressBorked).await()
                 null

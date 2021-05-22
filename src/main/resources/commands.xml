@@ -31,6 +31,8 @@
                 <choice>roberts</choice>
                 <choice>rylanders</choice>
                 <choice>sharpen</choice>
+                <choice>solarize</choice>
+                <choice>vintage</choice>
             </arg>
             <arg name="strength" comment="If applicable, the strength of the filter" type="string" required="false">
                 <choice>weak</choice>
