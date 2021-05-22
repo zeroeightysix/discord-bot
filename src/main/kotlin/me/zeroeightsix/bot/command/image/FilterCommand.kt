@@ -28,7 +28,7 @@ object FilterCommand {
         val reply = event.reply(translate("supply_image").progressInput).await()
 
         @Suppress("BlockingMethodInNonBlockingContext")
-        nextFile({ it.isImage }) { event, attachment ->
+        nextFile({ it.isImage }, reply) { event, attachment ->
             reply.editOriginal("Molding image...".progressWorking).await()
 
             val inputStream = attachment.retrieveInputStream().await()
