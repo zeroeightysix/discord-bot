@@ -43,8 +43,6 @@ import kotlin.random.Random
 
 object FilterCommand {
 
-    private const val BLUR_PART = 30f
-
     suspend fun CommandContext.filterImage(usrStrength: String?, filterSupplier: (Int, Int) -> Filter) {
         val reply = event.replyEmbeds(translate("supply_image").progressInput).await()
 
@@ -119,7 +117,7 @@ object FilterCommand {
             } ?: 20) / 100f
 
             filterImage("$percentage%") { w, h ->
-                val radius = min(w * percentage, h * percentage).roundToInt().toFloat()
+                val radius = min(w * percentage / 20f, h * percentage / 20f).roundToInt().toFloat()
                 BoxBlurFilter(radius, radius, 5)
             }
         }
