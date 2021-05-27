@@ -15,7 +15,6 @@ import com.sksamuel.scrimage.filter.GothamFilter
 import com.sksamuel.scrimage.filter.GrayscaleFilter
 import com.sksamuel.scrimage.filter.InvertFilter
 import com.sksamuel.scrimage.filter.KaleidoscopeFilter
-import com.sksamuel.scrimage.filter.NashvilleFilter
 import com.sksamuel.scrimage.filter.OffsetFilter
 import com.sksamuel.scrimage.filter.PixelateFilter
 import com.sksamuel.scrimage.filter.PrewittFilter
@@ -148,17 +147,19 @@ object FilterCommand {
             val scale = (IntConstraint(min = 1)(usrScale) {
                 event.replyEmbeds(translate("crystallize_scale_out_of_bounds").progressBorked).await()
                 return
-            } ?: 25) / 10.0
+            } ?: 160) / 10.0
             val thickness = (IntConstraint(min = 1)(usrThickness) {
                 event.replyEmbeds(translate("crystallize_thickness_out_of_bounds").progressBorked).await()
                 return
-            } ?: 25) / 10.0
+            } ?: 4) / 10.0
             val randomness = (IntConstraint(min = 1)(usrRandomness) {
                 event.replyEmbeds(translate("crystallize_randomness_out_of_bounds").progressBorked).await()
                 return
-            } ?: 25) / 10.0
+            } ?: 2) / 10.0
 
-            filterImage("${scale*10.0} ${thickness*10} ${randomness*10}") { _, _ -> CrystallizeFilter(scale, thickness, 0, randomness)}
+            filterImage("${scale*10.0} ${thickness*10} ${randomness*10}") { _, _ ->
+                CrystallizeFilter(scale, thickness, -0x1000000, randomness)
+            }
         }
     }
 
