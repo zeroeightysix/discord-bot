@@ -139,7 +139,7 @@ object FilterCommand {
                 return
             } ?: 100) / 100f
 
-            filterImage("$usrAmount, $usrExposure") { _, _ -> ChromeFilter(amount, exposure) }
+            filterImage("$amount%, $exposure%") { _, _ -> ChromeFilter(amount, exposure) }
         }
     }
 
@@ -158,7 +158,7 @@ object FilterCommand {
                 return
             } ?: 25) / 10.0
 
-            filterImage("$usrScale $usrThickness $usrRandomness") { _, _ -> CrystallizeFilter(scale, thickness, 0, randomness)}
+            filterImage("${scale*10.0} ${thickness*10} ${randomness*10}") { _, _ -> CrystallizeFilter(scale, thickness, 0, randomness)}
         }
     }
 
@@ -181,7 +181,7 @@ object FilterCommand {
                 return
             } ?: 50) / 100f
 
-            filterImage(null) { _, _ -> GlowFilter(amount) }
+            filterImage("$amount%") { _, _ -> GlowFilter(amount) }
         }
     }
 
