@@ -26,7 +26,7 @@ object VoicestatCommand {
                 mapOf(channel.idLong to VoiceTracker.getTime(memberId, channel.idLong)).filterValues { it != null })
 
             if (times.isNotEmpty()) {
-                event.reply(Embed {
+                event.replyEmbeds(Embed {
                     title = "Voice channel times"
                     times.forEach {
                         field {

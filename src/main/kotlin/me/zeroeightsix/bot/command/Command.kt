@@ -108,7 +108,7 @@ class CommandContext(val event: SlashCommandEvent) : CommandOptions, L10n {
         inline operator fun invoke(value: Int?, onError: (Int) -> Int): Int? =
             value?.let { invoke(it, onError) }
     }
-    
+
     inner class TypeConstraint {
         inline operator fun <reified Has, reified Want> invoke(value: Has, onError: (Has) -> Want): Want =
             (value as? Want) ?: onError(value)

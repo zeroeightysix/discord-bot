@@ -10,14 +10,14 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.interactions.commands.CommandHook
+import net.dv8tion.jda.api.interactions.InteractionHook
 import java.time.Duration
 import java.time.Instant
 
 object Conversation {
 
     fun CommandContext.nextMessage(
-        hook: CommandHook? = null,
+        hook: InteractionHook? = null,
         expireTime: Duration = Duration.ofMinutes(10),
         block: suspend (event: MessageReceivedEvent, message: Message) -> Unit
     ) {
@@ -44,7 +44,7 @@ object Conversation {
      */
     fun CommandContext.nextFile(
         filter: (Message.Attachment) -> Boolean = { true },
-        hook: CommandHook? = null,
+        hook: InteractionHook? = null,
         expireTime: Duration = Duration.ofMinutes(1),
         block: suspend (event: MessageReceivedEvent, attachment: Message.Attachment) -> Unit
     ) {
@@ -92,7 +92,7 @@ object Conversation {
     }
 
     private abstract class ReplyDeletingEventListener<E, R>(
-        private val hook: CommandHook?,
+        private val hook: InteractionHook?,
         private val member: MemberID,
         private val channel: ChannelID,
         consumer: suspend (E, R) -> Unit,
@@ -125,7 +125,7 @@ object Conversation {
     private class MessageEventListener(
         private val member: MemberID,
         private val channel: ChannelID,
-        hook: CommandHook?,
+        hook: InteractionHook?,
         consumer: suspend (event: MessageReceivedEvent, Message) -> Unit,
         dieAt: Instant?
     ) : ReplyDeletingEventListener<MessageReceivedEvent, Message>(hook, member, channel, consumer, dieAt) {
@@ -144,7 +144,7 @@ object Conversation {
         private val member: MemberID,
         private val channel: ChannelID,
         private val filter: (Message.Attachment) -> Boolean,
-        hook: CommandHook?,
+        hook: InteractionHook?,
         consumer: suspend (event: MessageReceivedEvent, Message.Attachment) -> Unit,
         dieAt: Instant?
     ) : ReplyDeletingEventListener<MessageReceivedEvent, Message.Attachment>(hook, member, channel, consumer, dieAt) {

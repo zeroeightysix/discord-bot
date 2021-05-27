@@ -13,16 +13,15 @@ import com.sksamuel.scrimage.filter.Filter
 import com.sksamuel.scrimage.filter.GlowFilter
 import com.sksamuel.scrimage.filter.GothamFilter
 import com.sksamuel.scrimage.filter.GrayscaleFilter
-import com.sksamuel.scrimage.filter.HSBFilter
 import com.sksamuel.scrimage.filter.InvertFilter
 import com.sksamuel.scrimage.filter.KaleidoscopeFilter
+import com.sksamuel.scrimage.filter.NashvilleFilter
 import com.sksamuel.scrimage.filter.OffsetFilter
 import com.sksamuel.scrimage.filter.PixelateFilter
 import com.sksamuel.scrimage.filter.PrewittFilter
 import com.sksamuel.scrimage.filter.RobertsFilter
 import com.sksamuel.scrimage.filter.RylandersFilter
 import com.sksamuel.scrimage.filter.SolarizeFilter
-import com.sksamuel.scrimage.filter.TritoneFilter
 import com.sksamuel.scrimage.filter.VintageFilter
 import com.sksamuel.scrimage.nio.GifSequenceWriter
 import com.sksamuel.scrimage.nio.JpegWriter
@@ -35,26 +34,24 @@ import me.zeroeightsix.bot.util.tryDelete
 import me.zeroeightsix.bot.util.withoutFileExtension
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.interactions.commands.CommandHook
+import net.dv8tion.jda.api.interactions.InteractionHook
 import java.io.ByteArrayInputStream
 import java.io.InputStream
-import java.util.*
-import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt
+import kotlin.random.Random
 
 object FilterCommand {
 
     private const val BLUR_PART = 30f
 
-    suspend fun CommandContext.execute(usrFilter: String, usrStrength: String?) {
-        val filterSupplier = getFilter(usrFilter, getStrength(usrStrength)) ?: return
-        val reply = event.reply(translate("supply_image").progressInput).await()
+    suspend fun CommandContext.filterImage(usrStrength: String?, filterSupplier: (Int, Int) -> Filter) {
+        val reply = event.replyEmbeds(translate("supply_image").progressInput).await()
 
         @Suppress("BlockingMethodInNonBlockingContext")
         nextFile({ it.isImage }, reply) { event, attachment ->
             val workingMsg = getWorkingMsg(usrStrength)
-            reply.editOriginal(workingMsg.progressWorking).await()
+            reply.editOriginalEmbeds(workingMsg.progressWorking).await()
 
             try {
                 sendTransformedImage(attachment, reply, event) { inputStream ->
@@ -63,7 +60,7 @@ object FilterCommand {
             } catch (e: Exception) {
                 e.printStackTrace()
 
-                reply.editOriginal(
+                reply.editOriginalEmbeds(
                     """
                     ${translate("err_throwable_occurred", e.javaClass.simpleName)}
                     ${translate("err_contact_dev")}
@@ -75,7 +72,7 @@ object FilterCommand {
 
     internal suspend fun CommandContext.sendTransformedImage(
         attachment: Message.Attachment,
-        reply: CommandHook,
+        reply: InteractionHook,
         event: MessageReceivedEvent,
         transform: (InputStream) -> Pair<ByteArrayInputStream, String>?
     ) {
@@ -88,7 +85,7 @@ object FilterCommand {
             output,
             "${attachment.fileName.withoutFileExtension}.$ext"
         ).await()
-        reply.editOriginal(translate("image_modified").progressSuccess).await()
+        reply.editOriginalEmbeds(translate("image_modified").progressSuccess).await()
     }
 
     private fun transformImage(
@@ -114,68 +111,153 @@ object FilterCommand {
         return workingMsg
     }
 
-    private suspend fun CommandContext.getFilter(
-        usrFilter: String,
-        modifier: Float
-    ): ((Int, Int) -> Filter)? {
-        return when (usrFilter) {
-            "blur" -> { w, h ->
-                val radius = min((w * modifier) / BLUR_PART, (h * modifier) / BLUR_PART).roundToInt().toFloat()
+    object Blur {
+        suspend fun CommandContext.execute(usrPercentage: Int?) {
+            val percentage = (IntConstraint(min = 0, max = 100)(usrPercentage) {
+                event.replyEmbeds(translate("blur_out_of_bounds").progressBorked).await()
+                return
+            } ?: 20) / 100f
+
+            filterImage("$percentage%") { w, h ->
+                val radius = min(w * percentage, h * percentage).roundToInt().toFloat()
                 BoxBlurFilter(radius, radius, 5)
-            }
-            "bump" -> { _, _ -> BumpFilter() }
-            "chrome" -> { _, _ -> ChromeFilter(modifier, modifier) }
-            "crystallize" -> { _, _ ->
-                CrystallizeFilter(
-                    (modifier + 1.0) * 5.0,
-                    modifier.toDouble(),
-                    0,
-                    modifier.toDouble()
-                )
-            }
-            "dither" -> { _, _ -> DitherFilter() }
-            "edge" -> { _, _ -> EdgeFilter() }
-            "emboss" -> { _, _ -> EmbossFilter() }
-            "glow" -> { _, _ -> GlowFilter(modifier) }
-            "gotham" -> { _, _ -> GothamFilter() }
-            "grayscale" -> { _, _ -> GrayscaleFilter() }
-            "hsb" -> { _, _ ->
-                val random = Random()
-                val rd =
-                    { (modifier + random.nextFloat() * (1f - modifier) * modifier) * if (random.nextBoolean()) -1f else 1f }
-                val h = rd()
-                val s = rd() * 0.8f
-                val b = rd() * 0.8f
-                println("$h $s $b")
-                HSBFilter(h, s, b)
-            }
-            "invert" -> { _, _ -> InvertFilter() }
-            "kaleidoscope" -> { _, _ -> KaleidoscopeFilter(ceil(modifier * 20).toInt()) }
-            "offset" -> { w, h ->
-                val random = Random()
-                val x = (random.nextDouble() * modifier * w).roundToInt()
-                val y = (random.nextDouble() * modifier * h).roundToInt()
-                OffsetFilter(x, y)
-            }
-            "pixelate" -> { _, _ -> PixelateFilter((modifier * 20).roundToInt()) }
-            "prewitt" -> { _, _ -> PrewittFilter() }
-            "roberts" -> { _, _ -> RobertsFilter() }
-            "rylanders" -> { _, _ -> RylandersFilter() }
-            "sharpen" -> { _, _ -> SharpenFilter.added(modifier * 3f) }
-            "solarize" -> { _, _ -> SolarizeFilter() }
-            "vintage" -> { _, _ -> VintageFilter() }
-            else -> {
-                event.reply(translate("unknown_filter").progressBorked).await()
-                null
             }
         }
     }
 
-    private fun getStrength(usrStrength: String?) = if (usrStrength == null) 0.25f else when (usrStrength) {
-        "weak" -> 0.1f
-        "strong" -> 0.5f
-        "overkill" -> 1.0f
-        else /*, 'normal'*/ -> 0.25f
+    object Bump {
+        suspend fun CommandContext.execute() = filterImage(null) { _, _ -> BumpFilter() }
+    }
+
+    object Chrome {
+        suspend fun CommandContext.execute(usrAmount: Int?, usrExposure: Int?) {
+            val amount = (IntConstraint(min = 0, max = 100)(usrAmount) {
+                event.replyEmbeds(translate("chrome_amount_out_of_bounds").progressBorked).await()
+                return
+            } ?: 50) / 100f
+
+            val exposure = (IntConstraint(min = 0, max = 100)(usrExposure) {
+                event.replyEmbeds(translate("chrome_exposure_out_of_bounds").progressBorked).await()
+                return
+            } ?: 100) / 100f
+
+            filterImage("$usrAmount, $usrExposure") { _, _ -> ChromeFilter(amount, exposure) }
+        }
+    }
+
+    object Crystallize {
+        suspend fun CommandContext.execute(usrScale: Int?, usrThickness: Int?, usrRandomness: Int?) {
+            val scale = (IntConstraint(min = 1)(usrScale) {
+                event.replyEmbeds(translate("crystallize_scale_out_of_bounds").progressBorked).await()
+                return
+            } ?: 25) / 10.0
+            val thickness = (IntConstraint(min = 1)(usrThickness) {
+                event.replyEmbeds(translate("crystallize_thickness_out_of_bounds").progressBorked).await()
+                return
+            } ?: 25) / 10.0
+            val randomness = (IntConstraint(min = 1)(usrRandomness) {
+                event.replyEmbeds(translate("crystallize_randomness_out_of_bounds").progressBorked).await()
+                return
+            } ?: 25) / 10.0
+
+            filterImage("$usrScale $usrThickness $usrRandomness") { _, _ -> CrystallizeFilter(scale, thickness, 0, randomness)}
+        }
+    }
+
+    object Dither {
+        suspend fun CommandContext.execute() = filterImage(null) { _, _ -> DitherFilter() }
+    }
+
+    object Edge {
+        suspend fun CommandContext.execute() = filterImage(null) { _, _ -> EdgeFilter() }
+    }
+
+    object Emboss {
+        suspend fun CommandContext.execute() = filterImage(null) { _, _ -> EmbossFilter() }
+    }
+
+    object Glow {
+        suspend fun CommandContext.execute(usrAmount: Int?) {
+            val amount = (IntConstraint(min = 0, max = 100)(usrAmount) {
+                event.replyEmbeds(translate("glow_amount_out_of_bounds").progressBorked).await()
+                return
+            } ?: 50) / 100f
+
+            filterImage(null) { _, _ -> GlowFilter(amount) }
+        }
+    }
+
+    object Gotham {
+        suspend fun CommandContext.execute() = filterImage(null) { _, _ -> GothamFilter() }
+    }
+
+    object Grayscale {
+        suspend fun CommandContext.execute() = filterImage(null) { _, _ -> GrayscaleFilter() }
+    }
+
+    object Invert {
+        suspend fun CommandContext.execute() = filterImage(null) { _, _ -> InvertFilter() }
+    }
+
+    object Kaleidoscope {
+        suspend fun CommandContext.execute(usrSides: Int?) {
+            val sides = IntConstraint(min = 3)(usrSides) {
+                event.replyEmbeds(translate("kaleidoscope_sides_out_of_bounds").progressBorked).await()
+                return
+            } ?: 3
+
+            filterImage("$sides sides") { _, _ -> KaleidoscopeFilter(sides) }
+        }
+    }
+
+    object Offset {
+        suspend fun CommandContext.execute(usrX: Int?, usrY: Int?) {
+            filterImage("X: $usrX, Y: $usrY") { w, h ->
+                OffsetFilter(usrX ?: Random.nextInt(w), usrY ?: Random.nextInt(h))
+            }
+        }
+    }
+
+    object Pixelate {
+        suspend fun CommandContext.execute(usrBlockSize: Int?) {
+            val blockSize = IntConstraint(min = 1, max = 100)(usrBlockSize) {
+                event.replyEmbeds(translate("pixelate_block_size_out_of_bounds").progressBorked).await()
+                return
+            } ?: 5
+
+            filterImage("block size = $blockSize") { _, _ -> PixelateFilter(blockSize)}
+        }
+    }
+
+    object Prewitt {
+        suspend fun CommandContext.execute() = filterImage(null) { _, _ -> PrewittFilter() }
+    }
+
+    object Roberts {
+        suspend fun CommandContext.execute() = filterImage(null) { _, _ -> RobertsFilter() }
+    }
+
+    object Rylanders {
+        suspend fun CommandContext.execute() = filterImage(null) { _, _ -> RylandersFilter() }
+    }
+
+    object Sharpen {
+        suspend fun CommandContext.execute(usrStrength: Int?) {
+            val strength = (IntConstraint(min = 1, max = 100)(usrStrength) {
+                event.replyEmbeds(translate("sharpen_strength_out_of_bounds").progressBorked).await()
+                return
+            } ?: 9) / 33f
+
+            filterImage("strength = ${strength * 33f}") { _, _ -> SharpenFilter.added(strength)}
+        }
+    }
+
+    object Solarize {
+        suspend fun CommandContext.execute() = filterImage(null) { _, _ -> SolarizeFilter() }
+    }
+
+    object Vintage {
+        suspend fun CommandContext.execute() = filterImage(null) { _, _ -> VintageFilter() }
     }
 
 }
