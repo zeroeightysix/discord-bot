@@ -115,7 +115,7 @@ object FilterCommand {
                 return
             } ?: 20) / 100f
 
-            filterImage("$percentage%") { w, h ->
+            filterImage("${percentage * 100}%") { w, h ->
                 val radius = min(w * percentage / 20f, h * percentage / 20f).roundToInt().toFloat()
                 BoxBlurFilter(radius, radius, 5)
             }
@@ -138,7 +138,7 @@ object FilterCommand {
                 return
             } ?: 100) / 100f
 
-            filterImage("$amount%, $exposure%") { _, _ -> ChromeFilter(amount, exposure) }
+            filterImage("${amount * 100}%, ${exposure * 100}%") { _, _ -> ChromeFilter(amount, exposure) }
         }
     }
 
@@ -182,7 +182,7 @@ object FilterCommand {
                 return
             } ?: 50) / 100f
 
-            filterImage("$amount%") { _, _ -> GlowFilter(amount) }
+            filterImage("${amount * 100}%") { _, _ -> GlowFilter(amount) }
         }
     }
 
