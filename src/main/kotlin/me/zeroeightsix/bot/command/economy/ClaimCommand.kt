@@ -37,11 +37,11 @@ object ClaimCommand {
         if (mayClaimAgain(duration)) {
             val newBalance = claimCoins(member.idLong)
 
-            event.reply(translate("claimed_and_now_have", CLAIM_AMOUNT, newBalance.balance)).await()
+            event.replyEmbeds(translate("claimed_and_now_have", CLAIM_AMOUNT, newBalance.balance).progressSuccess).await()
         } else {
             val timeToGo = CLAIM_TIMEOUT.minus(duration)
 
-            event.reply(translate("claimed_too_early", timeToGo.humanReadable)).await()
+            event.replyEmbeds(translate("claimed_too_early", timeToGo.humanReadable).progressFailure).await()
         }
     }
 
