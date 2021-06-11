@@ -43,12 +43,12 @@ import kotlin.random.Random
 object FilterCommand {
 
     suspend fun CommandContext.filterImage(usrStrength: String?, filterSupplier: (Int, Int) -> Filter) {
-        val reply = event.replyEmbeds(translate("supply_image").progressInput).await()
+        val reply = event.replyEmbeds(translate("supply_image").embedWaitInput).await()
 
         @Suppress("BlockingMethodInNonBlockingContext")
         nextFile({ it.isImage }, reply) { event, attachment ->
             val workingMsg = getWorkingMsg(usrStrength)
-            reply.editOriginalEmbeds(workingMsg.progressWorking).await()
+            reply.editOriginalEmbeds(workingMsg.embedWorking).await()
 
             try {
                 sendTransformedImage(attachment, reply, event) { inputStream ->
@@ -61,7 +61,7 @@ object FilterCommand {
                     """
                     ${translate("err_throwable_occurred", e.javaClass.simpleName)}
                     ${translate("err_contact_dev")}
-                    """.trimIndent().progressBorked
+                    """.trimIndent().embedBorked
                 ).await()
             }
         }
@@ -82,7 +82,7 @@ object FilterCommand {
             output,
             "${attachment.fileName.withoutFileExtension}.$ext"
         ).await()
-        reply.editOriginalEmbeds(translate("image_modified").progressSuccess).await()
+        reply.editOriginalEmbeds(translate("image_modified").embedSuccess).await()
     }
 
     private fun transformImage(
@@ -111,7 +111,7 @@ object FilterCommand {
     object Blur {
         suspend fun CommandContext.execute(usrPercentage: Int?) {
             val percentage = (IntConstraint(min = 0, max = 100)(usrPercentage) {
-                event.replyEmbeds(translate("blur_out_of_bounds").progressBorked).await()
+                event.replyEmbeds(translate("blur_out_of_bounds").embedBorked).await()
                 return
             } ?: 20) / 100f
 
@@ -129,12 +129,12 @@ object FilterCommand {
     object Chrome {
         suspend fun CommandContext.execute(usrAmount: Int?, usrExposure: Int?) {
             val amount = (IntConstraint(min = 0, max = 100)(usrAmount) {
-                event.replyEmbeds(translate("chrome_amount_out_of_bounds").progressBorked).await()
+                event.replyEmbeds(translate("chrome_amount_out_of_bounds").embedBorked).await()
                 return
             } ?: 50) / 100f
 
             val exposure = (IntConstraint(min = 0, max = 100)(usrExposure) {
-                event.replyEmbeds(translate("chrome_exposure_out_of_bounds").progressBorked).await()
+                event.replyEmbeds(translate("chrome_exposure_out_of_bounds").embedBorked).await()
                 return
             } ?: 100) / 100f
 
@@ -145,15 +145,15 @@ object FilterCommand {
     object Crystallize {
         suspend fun CommandContext.execute(usrScale: Int?, usrThickness: Int?, usrRandomness: Int?) {
             val scale = (IntConstraint(min = 1)(usrScale) {
-                event.replyEmbeds(translate("crystallize_scale_out_of_bounds").progressBorked).await()
+                event.replyEmbeds(translate("crystallize_scale_out_of_bounds").embedBorked).await()
                 return
             } ?: 160) / 10.0
             val thickness = (IntConstraint(min = 1)(usrThickness) {
-                event.replyEmbeds(translate("crystallize_thickness_out_of_bounds").progressBorked).await()
+                event.replyEmbeds(translate("crystallize_thickness_out_of_bounds").embedBorked).await()
                 return
             } ?: 4) / 10.0
             val randomness = (IntConstraint(min = 1)(usrRandomness) {
-                event.replyEmbeds(translate("crystallize_randomness_out_of_bounds").progressBorked).await()
+                event.replyEmbeds(translate("crystallize_randomness_out_of_bounds").embedBorked).await()
                 return
             } ?: 2) / 10.0
 
@@ -178,7 +178,7 @@ object FilterCommand {
     object Glow {
         suspend fun CommandContext.execute(usrAmount: Int?) {
             val amount = (IntConstraint(min = 0, max = 100)(usrAmount) {
-                event.replyEmbeds(translate("glow_amount_out_of_bounds").progressBorked).await()
+                event.replyEmbeds(translate("glow_amount_out_of_bounds").embedBorked).await()
                 return
             } ?: 50) / 100f
 
@@ -201,7 +201,7 @@ object FilterCommand {
     object Kaleidoscope {
         suspend fun CommandContext.execute(usrSides: Int?) {
             val sides = IntConstraint(min = 3)(usrSides) {
-                event.replyEmbeds(translate("kaleidoscope_sides_out_of_bounds").progressBorked).await()
+                event.replyEmbeds(translate("kaleidoscope_sides_out_of_bounds").embedBorked).await()
                 return
             } ?: 3
 
@@ -220,7 +220,7 @@ object FilterCommand {
     object Pixelate {
         suspend fun CommandContext.execute(usrBlockSize: Int?) {
             val blockSize = IntConstraint(min = 1, max = 100)(usrBlockSize) {
-                event.replyEmbeds(translate("pixelate_block_size_out_of_bounds").progressBorked).await()
+                event.replyEmbeds(translate("pixelate_block_size_out_of_bounds").embedBorked).await()
                 return
             } ?: 5
 
@@ -243,7 +243,7 @@ object FilterCommand {
     object Sharpen {
         suspend fun CommandContext.execute(usrStrength: Int?) {
             val strength = (IntConstraint(min = 1, max = 100)(usrStrength) {
-                event.replyEmbeds(translate("sharpen_strength_out_of_bounds").progressBorked).await()
+                event.replyEmbeds(translate("sharpen_strength_out_of_bounds").embedBorked).await()
                 return
             } ?: 9) / 33f
 

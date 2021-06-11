@@ -21,11 +21,11 @@ object ScaleimageCommand {
         val scale = if (usrScale in 1..MAX_SCALE) {
             usrScale.toDouble() / 100.0
         } else {
-            event.replyEmbeds(translate("scale_out_of_bounds", 0, MAX_SCALE).progressBorked).await()
+            event.replyEmbeds(translate("scale_out_of_bounds", 0, MAX_SCALE).embedBorked).await()
             return
         }
 
-        val reply = event.replyEmbeds(translate("supply_image").progressInput).await()
+        val reply = event.replyEmbeds(translate("supply_image").embedWaitInput).await()
         @Suppress("BlockingMethodInNonBlockingContext")
         nextFile({ it.isImage }, reply) { event, attachment ->
             try {
@@ -33,7 +33,7 @@ object ScaleimageCommand {
                     scaleImage(attachment, inputStream, scale)
                 }
             } catch (e: ScaleException) {
-                reply.editOriginalEmbeds(translate("scale_too_small").progressBorked).await()
+                reply.editOriginalEmbeds(translate("scale_too_small").embedBorked).await()
             } catch (e: Exception) {
                 e.printStackTrace()
 
@@ -41,7 +41,7 @@ object ScaleimageCommand {
                     """
                     ${translate("err_throwable_occurred", e.javaClass.simpleName)}
                     ${translate("err_contact_dev")}
-                    """.trimIndent().progressBorked
+                    """.trimIndent().embedBorked
                 ).await()
             }
         }

@@ -71,34 +71,34 @@ class CommandContext(val event: SlashCommandEvent) : CommandOptions, L10n {
     inline val String.err: String
         get() = ":warning: $this"
 
-    inline val String.progressInput: MessageEmbed
+    inline val String.embedWaitInput: MessageEmbed
         get() = EmbedBuilder {
-            title = translate("progress_awaiting_input")
-            description = this@progressInput
+            title = translate("embed_awaiting_input")
+            description = this@embedWaitInput
         }.build()
 
-    inline val String.progressWorking: MessageEmbed
+    inline val String.embedWorking: MessageEmbed
         get() = EmbedBuilder {
-            title = translate("progress_working")
-            description = this@progressWorking
+            title = translate("embed_working")
+            description = this@embedWorking
         }.build()
 
-    inline val String.progressFailure: MessageEmbed
+    inline val String.embedFailure: MessageEmbed
         get() = EmbedBuilder {
-            title = translate("progress_failure")
-            description = this@progressFailure
+            title = translate("embed_failure")
+            description = this@embedFailure
         }.build()
 
-    inline val String.progressBorked: MessageEmbed
+    inline val String.embedBorked: MessageEmbed
         get() = EmbedBuilder {
-            title = translate("progress_borked")
-            description = this@progressBorked
+            title = translate("embed_borked")
+            description = this@embedBorked
         }.build()
 
-    inline val String.progressSuccess: MessageEmbed
+    inline val String.embedSuccess: MessageEmbed
         get() = EmbedBuilder {
-            title = translate("progress_success")
-            description = this@progressSuccess
+            title = translate("embed_success")
+            description = this@embedSuccess
         }.build()
 
     inner class IntConstraint(
