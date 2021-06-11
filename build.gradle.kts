@@ -7,7 +7,7 @@ plugins {
 group = "me.zeroeightsix"
 version = "1.0-SNAPSHOT"
 
-val jdaVersion = "4.2.1_253"
+val jdaVersion = "4.3.0_277"
 val ktxVersion = "985db8173e"
 val ktormVersion = "3.4.1"
 
@@ -29,8 +29,7 @@ dependencies {
     implementation("org.cache2k:cache2k-api:2.0.0.Final")
     implementation("org.cache2k:cache2k-core:2.0.0.Final")
     // JDA
-//    implementation("net.dv8tion:JDA:${jdaVersion}")
-    implementation("com.github.DV8FromTheWorld:JDA:feature~slash-commands-SNAPSHOT")
+    implementation("net.dv8tion:JDA:${jdaVersion}")
     implementation("com.github.minndevelopment:jda-ktx:${ktxVersion}")
     // Logging
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")

@@ -295,6 +295,9 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                     }
                 }
 
+            fun SubcommandData.addOption(option: OptionData) = this.addOption(option.type, option.name, option.description, option.isRequired)
+            fun CommandData.addOption(option: OptionData) = this.addOption(option.type, option.name, option.description, option.isRequired)
+
             val rootCommandData = CommandData(name, comment)
             if (subCommands.isNotEmpty()) {
                 subCommands.forEach { subCommand ->
@@ -303,7 +306,7 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                         val groupData = SubcommandGroupData(subCommand.name, subCommand.comment)
                         subCommand.subCommands.forEach { subSubCommand ->
                             // subcommands in a group can not be groups
-                            groupData.addSubcommand(
+                            groupData.addSubcommands(
                                 SubcommandData(
                                     subSubCommand.name,
                                     subSubCommand.comment
@@ -311,10 +314,10 @@ class XMLCommandLoader private constructor() : DefaultHandler() {
                                     createOptions(subSubCommand.arguments).forEach { ssData.addOption(it) }
                                 })
                         }
-                        rootCommandData.addSubcommandGroup(groupData)
+                        rootCommandData.addSubcommandGroups(groupData)
                     } else {
                         // `subCommand` is not a subcommand group
-                        rootCommandData.addSubcommand(
+                        rootCommandData.addSubcommands(
                             SubcommandData(
                                 subCommand.name,
                                 subCommand.comment
