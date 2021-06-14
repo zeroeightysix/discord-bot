@@ -28,8 +28,6 @@ object VoiceTracker {
 
     init {
         jda.listener<GuildVoiceUpdateEvent> { event ->
-            println(event)
-
             val memberId = event.entity.idLong
             if (event.channelJoined == null) {
                 // User left
