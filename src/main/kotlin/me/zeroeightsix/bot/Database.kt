@@ -7,7 +7,7 @@ lateinit var database: Database
 
 fun connectDatabase(user: String, password: String, dbName: String) {
     database = Database.connect(
-        "jdbc:mysql://localhost:3306/$dbName", driver = "com.mysql.jdbc.Driver",
+        "jdbc:mysql://localhost:3306/$dbName", driver = "com.mysql.cj.jdbc.Driver",
         user, password
     )
 }
